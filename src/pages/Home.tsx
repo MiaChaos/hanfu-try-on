@@ -39,7 +39,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background relative overflow-hidden">
+    <div className="flex flex-col h-screen bg-background relative">
       {/* Header - Right Aligned */}
       <div className="absolute top-0 right-0 z-30 p-4 text-right bg-gradient-to-l from-black/50 to-transparent">
         <h1 className="text-white text-xl font-serif font-bold tracking-widest drop-shadow-lg">
@@ -103,18 +103,18 @@ const Home: React.FC = () => {
         {!previewUrl ? (
           <Camera />
         ) : (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full flex flex-col">
             <img 
               src={previewUrl} 
               alt="Preview" 
               className="w-full h-full object-cover"
             />
             
-            {/* Overlay Actions */}
-            <div className="absolute bottom-10 left-0 right-0 p-8 flex justify-center gap-8 bg-gradient-to-t from-black/80 to-transparent pt-20">
+            {/* Overlay Actions - Centered at the bottom */}
+            <div className="absolute bottom-20 left-0 right-0 z-50 flex justify-center items-center gap-6 px-4">
               <button 
                 onClick={handleRetake}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-all font-medium border border-white/10"
+                className="flex items-center gap-2 px-6 py-4 rounded-full bg-black/60 backdrop-blur-xl text-white hover:bg-black/80 transition-all font-bold border border-white/20 shadow-2xl"
               >
                 <RotateCcw size={20} />
                 重拍
@@ -122,9 +122,9 @@ const Home: React.FC = () => {
               
               <button 
                 onClick={handleGenerate}
-                className="flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-white shadow-lg shadow-primary/30 hover:scale-105 transition-all font-bold text-lg"
+                className="flex items-center gap-3 px-10 py-4 rounded-full bg-primary text-white shadow-[0_0_30px_rgba(var(--primary-rgb),0.5)] hover:scale-105 active:scale-95 transition-all font-black text-xl border-2 border-white/20"
               >
-                <Sparkles size={20} />
+                <Sparkles size={24} />
                 開始穿越
               </button>
             </div>

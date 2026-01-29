@@ -230,32 +230,15 @@ router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
       throw new Error('QWEN_API_KEY not configured')
     }
 
-    console.log(`[ONE-SHOT] Calling AI service (Wanx)...`)
+    console.log(`[ONE-SHOT] Calling AI service (Qwen Edit)...`)
     const apiResult = await generateHistoricalImage({ imagePath, dynasty, gender, apiKey })
 
-    // If it's an async task, we should poll or return task_id.
-    // For simplicity in this demo, let's try to poll for 30s in the backend if not on Vercel,
-    // otherwise return task_id and let frontend handle it (or mock for now).
-    
     let imageUrl = ''
-    if (apiResult.output?.task_id) {
-       // Simple polling implementation
-       const taskId = apiResult.output.task_id
-       let status = 'PENDING'
-       let attempts = 0
-       while ((status === 'PENDING' || status === 'RUNNING') && attempts < 15) {
-          await new Promise(r => setTimeout(r, 2000))
-          const pollRes = await fetch(`https://dashscope-intl.aliyuncs.com/api/v1/tasks/${taskId}`, {
-            headers: { 'Authorization': `Bearer ${apiKey}` }
-          })
-          const pollData: any = await pollRes.json()
-          status = pollData.output?.task_status
-          if (status === 'SUCCEEDED') {
-            imageUrl = pollData.output?.results?.[0]?.url || pollData.output?.url
-            break
-          }
-          attempts++
-       }
+    // Handle qwen-image-edit-max response format
+    const content = apiResult.output?.choices?.[0]?.message?.content
+    if (Array.isArray(content)) {
+      const imageItem = content.find((item: any) => item.image)
+      imageUrl = imageItem?.image
     }
 
     const genDir = path.join(GENERATED_DIR, dynasty)
@@ -266,12 +249,12 @@ router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
     
     if (imageUrl) {
       console.log(`[ONE-SHOT] Image generated: ${imageUrl}`)
-      // Download the image
       const imgRes = await fetch(imageUrl)
       const buffer = Buffer.from(await imgRes.arrayBuffer())
       fs.writeFileSync(genPath, buffer)
     } else {
-      console.warn(`[ONE-SHOT] Generation timed out or failed to return URL, using original as fallback`)
+      console.warn(`[ONE-SHOT] Failed to get image URL from AI result, using original as fallback`)
+      console.log(`[DEBUG] AI Result:`, JSON.stringify(apiResult))
       fs.copyFileSync(imagePath, genPath)
     }
 
