@@ -1,8 +1,9 @@
 
 export const uploadImage = async (file: File, dynasty: string) => {
   const formData = new FormData()
-  formData.append('image', file)
+  // Important: Append fields before the file to ensure they are available to Multer's storage engine
   formData.append('dynasty', dynasty)
+  formData.append('image', file)
   
   const response = await fetch('/api/upload', {
     method: 'POST',

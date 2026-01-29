@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     try {
       const dynasty = sanitize(req.body.dynasty || 'temp')
       const dir = path.join(UPLOADS_DIR, dynasty)
-      console.log(`[DEBUG] Multer destination: ${dir}`)
+      console.log(`[DEBUG] Multer destination: ${dir} (from body.dynasty: ${req.body.dynasty})`)
       if (!fs.existsSync(dir)) {
         console.log(`[DEBUG] Creating directory for upload: ${dir}`)
         fs.mkdirSync(dir, { recursive: true })
@@ -30,19 +30,14 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     try {
-      // Keep original extension
       const ext = path.extname(file.originalname).toLowerCase()
-      console.log(`[DEBUG] Multer filename, original: ${file.originalname}, ext: ${ext}`)
-      // Validate extension to prevent non-image uploads
       if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
-        console.warn(`[WARN] Invalid file type: ${ext}`)
         return cb(new Error('Invalid file type'), '')
       }
       const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`
-      console.log(`[DEBUG] Generated filename: ${filename}`)
+      console.log(`[DEBUG] Multer generated filename: ${filename}`)
       cb(null, filename)
     } catch (err: any) {
-      console.error(`[ERROR] Multer filename error:`, err)
       cb(err, '')
     }
   }
@@ -50,29 +45,28 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // Increased to 10MB to match Qwen limit
+  limits: { fileSize: 10 * 1024 * 1024 }
 })
 
 // POST /api/upload
 router.post('/upload', (req, res, next) => {
-  console.log(`[UPLOAD] Starting upload request...`)
+  console.log(`[UPLOAD] Received upload request. Body fields present: ${Object.keys(req.body).join(', ')}`)
   upload.single('image')(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       console.error(`[UPLOAD] Multer error:`, err)
       return res.status(400).json({ success: false, message: `Upload error: ${err.message}` })
     } else if (err) {
-      console.error(`[UPLOAD] Unknown error during upload:`, err)
+      console.error(`[UPLOAD] Unknown error:`, err)
       return res.status(400).json({ success: false, message: err.message })
     }
     
     try {
       if (!req.file) {
-        console.warn(`[UPLOAD] No file received`)
         return res.status(400).json({ success: false, message: 'No image uploaded' })
       }
       
-      const dynasty = sanitize(req.body.dynasty || 'tang')
-      console.log(`[UPLOAD] File uploaded successfully: ${req.file.filename}, dynasty: ${dynasty}`)
+      const dynasty = sanitize(req.body.dynasty || 'temp')
+      console.log(`[UPLOAD] File saved: ${req.file.path}`)
       
       res.json({
         success: true,
@@ -81,7 +75,7 @@ router.post('/upload', (req, res, next) => {
         originalUrl: `/uploads/${dynasty}/${req.file.filename}`
       })
     } catch (error) {
-      console.error('[UPLOAD] Processing error after upload:', error)
+      console.error('[UPLOAD] Error:', error)
       res.status(500).json({ success: false, message: 'Upload failed' })
     }
   })
@@ -89,11 +83,10 @@ router.post('/upload', (req, res, next) => {
 
 // POST /api/generate
 router.post('/generate', async (req, res) => {
-  console.log(`[GENERATE] Starting generate request with body:`, req.body)
+  console.log(`[GENERATE] Request body:`, req.body)
   const { imageId, dynasty } = req.body
   
   if (!imageId || !dynasty) {
-    console.warn(`[GENERATE] Missing imageId or dynasty`)
     return res.status(400).json({ success: false, message: 'Missing imageId or dynasty' })
   }
 
@@ -104,11 +97,22 @@ router.post('/generate', async (req, res) => {
     const uploadDir = path.join(UPLOADS_DIR, safeDynasty)
     const imagePath = path.join(uploadDir, safeImageId)
     
-    console.log(`[GENERATE] Looking for image at: ${imagePath}`)
+    console.log(`[GENERATE] Looking for: ${imagePath}`)
     
     if (!fs.existsSync(imagePath)) {
-       console.error(`[GENERATE] Image not found: ${imagePath}`)
-       return res.status(404).json({ success: false, message: 'Image not found' })
+       console.error(`[GENERATE] NOT FOUND: ${imagePath}`)
+       // Debug: list files in the directory
+       if (fs.existsSync(uploadDir)) {
+         const files = fs.readdirSync(uploadDir)
+         console.log(`[DEBUG] Files in ${uploadDir}:`, files)
+       } else {
+         console.log(`[DEBUG] Directory ${uploadDir} does not exist.`)
+       }
+       
+       return res.status(404).json({ 
+         success: false, 
+         message: `Image not found. Is Vercel? ${!!process.env.VERCEL}. Storage: ${STORAGE_BASE}` 
+       })
     }
 
     const apiKey = process.env.QWEN_API_KEY
@@ -198,6 +202,49 @@ router.get('/result/:filename', (req, res) => {
     })
   } else {
     res.status(404).json({ success: false, message: 'Result not found' })
+  }
+})
+
+// POST /api/generate-one-shot
+// A more robust endpoint for Serverless (Vercel) that handles upload and generation in one request
+router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
+  console.log(`[ONE-SHOT] Received request. Dynasty: ${req.body.dynasty}`)
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No image uploaded' })
+    }
+
+    const dynasty = sanitize(req.body.dynasty || 'tang')
+    const imagePath = req.file.path
+    const apiKey = process.env.QWEN_API_KEY
+
+    if (!apiKey) {
+      throw new Error('QWEN_API_KEY not configured')
+    }
+
+    console.log(`[ONE-SHOT] Calling AI service...`)
+    const apiResult = await generateHistoricalImage({ imagePath, dynasty, apiKey })
+
+    const genDir = path.join(GENERATED_DIR, dynasty)
+    if (!fs.existsSync(genDir)) fs.mkdirSync(genDir, { recursive: true })
+    
+    const genFilename = `gen-${req.file.filename}`
+    const genPath = path.join(genDir, genFilename)
+    
+    // In real app: download from apiResult. For now, simulate by copying
+    fs.copyFileSync(imagePath, genPath)
+
+    res.json({
+      success: true,
+      resultId: genFilename,
+      imageUrl: `/generated/${dynasty}/${genFilename}`,
+      status: 'completed',
+      apiResult
+    })
+  } catch (error: any) {
+    console.error('[ONE-SHOT] Error:', error)
+    res.status(500).json({ success: false, message: error.message || 'Processing failed' })
   }
 })
 
