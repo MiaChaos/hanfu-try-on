@@ -73,11 +73,12 @@ const Home: React.FC = () => {
         )}
       </div>
 
-      {/* Dynasty Selector - Only show in Camera mode or if we want to allow changing it in preview */}
-      {/* Let's show it in Camera mode mainly */}
+      {/* Dynasty Selector - Only show in Camera mode */}
       {!previewUrl && (
-        <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/90 via-black/50 to-transparent pt-10 pb-4">
-          <DynastySelector />
+        <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-20 pb-4 pointer-events-none">
+          <div className="pointer-events-auto">
+            <DynastySelector />
+          </div>
         </div>
       )}
     </div>
