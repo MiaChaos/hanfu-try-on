@@ -15,6 +15,12 @@ interface AppState {
     id: string
     dynasty: string
   } | null
+  history: Array<{
+    imageUrl: string
+    id: string
+    dynasty: string
+    timestamp: number
+  }>
   isProcessing: boolean
   error: string | null
 
@@ -24,6 +30,7 @@ interface AppState {
   setGender: (gender: Gender) => void
   setKeepBackground: (keep: boolean) => void
   setResult: (result: AppState['result']) => void
+  addToHistory: (item: AppState['history'][0]) => void
   setIsProcessing: (isProcessing: boolean) => void
   setError: (error: string | null) => void
   reset: () => void
@@ -36,6 +43,7 @@ export const useAppStore = create<AppState>((set) => ({
   selectedGender: 'female',
   keepBackground: false,
   result: null,
+  history: [],
   isProcessing: false,
   error: null,
 
@@ -45,6 +53,9 @@ export const useAppStore = create<AppState>((set) => ({
   setGender: (gender) => set({ selectedGender: gender }),
   setKeepBackground: (keep) => set({ keepBackground: keep }),
   setResult: (result) => set({ result }),
+  addToHistory: (item) => set((state) => ({ 
+    history: [item, ...state.history].slice(0, 10) // Keep last 10 items
+  })),
   setIsProcessing: (isProcessing) => set({ isProcessing }),
   setError: (error) => set({ error }),
   reset: () => set({
