@@ -84,7 +84,7 @@ router.post('/upload', (req, res, next) => {
 // POST /api/generate
 router.post('/generate', async (req, res) => {
   console.log(`[GENERATE] Request body:`, req.body)
-  const { imageId, dynasty } = req.body
+  const { imageId, dynasty, gender } = req.body
   
   if (!imageId || !dynasty) {
     return res.status(400).json({ success: false, message: 'Missing imageId or dynasty' })
@@ -92,6 +92,7 @@ router.post('/generate', async (req, res) => {
 
   try {
     const safeDynasty = sanitize(dynasty)
+    const safeGender = sanitize(gender || 'female')
     const safeImageId = sanitize(imageId.split('.')[0]) + path.extname(imageId)
     
     const uploadDir = path.join(UPLOADS_DIR, safeDynasty)
@@ -124,8 +125,13 @@ router.post('/generate', async (req, res) => {
     let apiResult = null
     if (apiKey) {
       try {
-         console.log(`[GENERATE] Calling Qwen API for dynasty: ${safeDynasty}`)
-         apiResult = await generateHistoricalImage({ imagePath, dynasty: safeDynasty, apiKey })
+         console.log(`[GENERATE] Calling Qwen API for dynasty: ${safeDynasty}, gender: ${safeGender}`)
+         apiResult = await generateHistoricalImage({ 
+           imagePath, 
+           dynasty: safeDynasty, 
+           gender: safeGender,
+           apiKey 
+         })
          console.log(`[GENERATE] Qwen API call successful`)
       } catch (e: any) {
         console.error('[GENERATE] AI Generation failed:', e.message)
