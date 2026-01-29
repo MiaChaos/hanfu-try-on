@@ -4,7 +4,7 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import { generateHistoricalImage } from '../services/qwen.js'
-import { UPLOADS_DIR, GENERATED_DIR } from '../app.js'
+import { UPLOADS_DIR, GENERATED_DIR, STORAGE_BASE } from '../app.js'
 
 const router = express.Router()
 
