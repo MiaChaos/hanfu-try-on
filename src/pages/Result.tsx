@@ -44,20 +44,20 @@ const Result: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background relative overflow-hidden">
+    <div className="flex flex-col h-screen bg-[#0a0a0a] relative overflow-hidden">
        {/* Background Decoration */}
-       <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+       <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
        <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
 
-      <div className="flex-1 p-8 flex flex-col items-center justify-center relative z-10">
-        <div className="relative w-full max-w-2xl aspect-[3/4] md:aspect-auto md:h-[70vh] shadow-2xl rounded-lg overflow-hidden border-8 border-white bg-white rotate-1 hover:rotate-0 transition-transform duration-500">
+      <div className="flex-1 p-4 flex flex-col items-center justify-center relative z-10 overflow-hidden">
+        <div className="relative w-full h-full max-h-[75vh] shadow-2xl rounded-2xl overflow-hidden border-4 border-white/10 bg-black flex items-center justify-center">
            <img 
             src={result.imageUrl} 
             alt="Result" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-white/90 p-4 backdrop-blur-sm">
-             <h3 className="text-center font-serif text-xl font-bold text-ink">
+          <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-3 backdrop-blur-md border-t border-white/10 text-center">
+             <h3 className="font-serif text-lg font-black tracking-widest text-primary">
                {result.dynasty === 'tang' && '大唐·長安'}
                {result.dynasty === 'song' && '大宋·汴京'}
                {result.dynasty === 'ming' && '大明·金陵'}
@@ -67,35 +67,35 @@ const Result: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-8 pb-12 flex justify-center gap-6 z-20">
+      <div className="p-6 pb-10 flex justify-center items-center gap-8 z-20 bg-gradient-to-t from-black to-transparent">
         <button 
           onClick={handleHome}
-          className="flex flex-col items-center gap-2 text-ink/60 hover:text-primary transition-colors"
+          className="flex flex-col items-center gap-1.5 text-white/40 hover:text-white transition-all active:scale-90"
         >
-          <div className="p-4 rounded-full bg-white shadow-md hover:shadow-lg transition-all">
-            <HomeIcon size={24} />
+          <div className="p-3.5 rounded-full bg-white/5 border border-white/10 shadow-xl backdrop-blur-md">
+            <HomeIcon size={20} />
           </div>
-          <span className="text-xs font-bold">返回</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">首頁</span>
         </button>
 
         <button 
           onClick={handleDownload}
-          className="flex flex-col items-center gap-2 text-ink hover:text-primary transition-colors"
+          className="flex flex-col items-center gap-2 text-white transition-all hover:scale-105 active:scale-95"
         >
-          <div className="p-6 rounded-full bg-primary text-white shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all">
-            <Download size={32} />
+          <div className="p-5 rounded-full bg-primary text-white shadow-[0_10px_30px_rgba(var(--primary-rgb),0.4)] border-2 border-white/20">
+            <Download size={28} />
           </div>
-          <span className="text-sm font-bold">保存照片</span>
+          <span className="text-xs font-black uppercase tracking-widest">保存照片</span>
         </button>
 
         <button 
           onClick={handleShare}
-          className="flex flex-col items-center gap-2 text-ink/60 hover:text-primary transition-colors"
+          className="flex flex-col items-center gap-1.5 text-white/40 hover:text-white transition-all active:scale-90"
         >
-          <div className="p-4 rounded-full bg-white shadow-md hover:shadow-lg transition-all">
-            <Share2 size={24} />
+          <div className="p-3.5 rounded-full bg-white/5 border border-white/10 shadow-xl backdrop-blur-md">
+            <Share2 size={20} />
           </div>
-          <span className="text-xs font-bold">分享</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">分享</span>
         </button>
       </div>
     </div>

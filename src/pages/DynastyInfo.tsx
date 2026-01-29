@@ -67,58 +67,62 @@ const DynastyInfo: React.FC = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen bg-background text-white p-6 pb-20">
-      <div className="flex items-center gap-4 mb-8">
+    <div className="min-h-screen bg-[#0f0f0f] text-white p-4 pb-32 overflow-y-auto">
+      <div className="sticky top-0 z-50 bg-[#0f0f0f]/80 backdrop-blur-md py-4 px-2 mb-4 flex items-center gap-4 border-b border-white/5">
         <button 
-          onClick={() => navigate(-1)}
-          className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+          onClick={() => navigate('/')}
+          className="p-3 rounded-full bg-white/10 hover:bg-primary hover:text-white transition-all active:scale-90"
+          aria-label="返回"
         >
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-2xl font-serif font-bold tracking-widest flex items-center gap-2">
-          <BookOpen className="text-primary" /> 朝代服飾百科
+        <h1 className="text-xl font-serif font-bold tracking-widest flex items-center gap-2">
+          <BookOpen className="text-primary" size={20} /> 服飾百科
         </h1>
       </div>
 
-      <div className="grid gap-8">
+      <div className="grid gap-6 max-w-2xl mx-auto">
         {DYNASTY_DETAILS.map((item) => (
           <div 
             key={item.id} 
-            className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl"
+            className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 shadow-2xl relative overflow-hidden"
           >
-            <div className="flex justify-between items-start mb-4">
+            {/* Subtle background glow */}
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+
+            <div className="flex justify-between items-start mb-3 relative z-10">
               <div>
-                <h2 className="text-xl font-serif font-bold text-primary mb-1">{item.name}</h2>
-                <span className="text-xs text-white/40 font-mono">{item.period}</span>
+                <h2 className="text-lg font-serif font-bold text-primary mb-0.5">{item.name}</h2>
+                <span className="text-[10px] text-white/30 font-mono tracking-tighter">{item.period}</span>
               </div>
-              <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                <Landmark size={20} />
+              <div className="p-2 rounded-lg bg-primary/20 text-primary border border-primary/20">
+                <Landmark size={18} />
               </div>
             </div>
 
-            <p className="text-sm text-white/80 leading-relaxed mb-6 italic">
+            <p className="text-xs text-white/70 leading-relaxed mb-4 italic font-light border-l-2 border-primary/30 pl-3 py-1 bg-primary/[0.02]">
               「{item.description}」
             </p>
 
-            <div className="space-y-4 mb-6">
-              <h3 className="text-sm font-bold flex items-center gap-2 text-white/90">
-                <User size={16} className="text-primary" /> 服飾特徵
+            <div className="space-y-3 mb-5 relative z-10">
+              <h3 className="text-xs font-bold flex items-center gap-2 text-white/90">
+                <User size={14} className="text-primary" /> 服飾特徵
               </h3>
               <ul className="grid gap-2">
                 {item.clothingFeatures.map((feature, idx) => (
-                  <li key={idx} className="text-xs text-white/60 flex items-start gap-2">
-                    <div className="mt-1.5 w-1 h-1 rounded-full bg-primary flex-shrink-0" />
+                  <li key={idx} className="text-[11px] text-white/50 flex items-start gap-2 leading-snug">
+                    <div className="mt-1.5 w-1 h-1 rounded-full bg-primary/60 flex-shrink-0" />
                     {feature}
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-              <h3 className="text-xs font-bold flex items-center gap-2 text-primary mb-2 uppercase tracking-wider">
-                <Sparkles size={14} /> AI 提示詞建議
+            <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 relative z-10">
+              <h3 className="text-[10px] font-black flex items-center gap-2 text-primary mb-1.5 uppercase tracking-widest">
+                <Sparkles size={12} /> AI 提示詞建議
               </h3>
-              <p className="text-xs text-white/70 leading-relaxed">
+              <p className="text-[11px] text-white/60 leading-normal font-mono bg-black/20 p-2 rounded border border-white/5">
                 {item.promptTip}
               </p>
             </div>
@@ -126,10 +130,10 @@ const DynastyInfo: React.FC = () => {
         ))}
       </div>
 
-      <div className="fixed bottom-6 left-6 right-6">
-        <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 flex items-start gap-3">
-          <Info size={18} className="text-yellow-500 flex-shrink-0 mt-0.5" />
-          <p className="text-[10px] text-yellow-500/80 leading-normal">
+      <div className="fixed bottom-4 left-4 right-4 z-50">
+        <div className="p-3 rounded-xl bg-primary/20 backdrop-blur-xl border border-primary/30 flex items-start gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+          <Info size={16} className="text-primary flex-shrink-0 mt-0.5" />
+          <p className="text-[9px] text-white/70 leading-normal">
             <strong>核心提示：</strong>系統在生成時已強制加入「面部保護」算法，確保穿越後的您五官特徵保持原樣，僅更換服飾。
           </p>
         </div>
