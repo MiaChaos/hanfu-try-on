@@ -249,19 +249,25 @@ router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
     
     if (imageUrl) {
       console.log(`[ONE-SHOT] Image generated: ${imageUrl}`)
-      const imgRes = await fetch(imageUrl)
-      const buffer = Buffer.from(await imgRes.arrayBuffer())
-      fs.writeFileSync(genPath, buffer)
+      // Download the image to /tmp as backup
+      try {
+        const imgRes = await fetch(imageUrl)
+        const buffer = Buffer.from(await imgRes.arrayBuffer())
+        fs.writeFileSync(genPath, buffer)
+      } catch (downloadErr) {
+        console.error(`[ONE-SHOT] Failed to download image to backup:`, downloadErr)
+      }
     } else {
       console.warn(`[ONE-SHOT] Failed to get image URL from AI result, using original as fallback`)
-      console.log(`[DEBUG] AI Result:`, JSON.stringify(apiResult))
       fs.copyFileSync(imagePath, genPath)
     }
 
     res.json({
       success: true,
       resultId: genFilename,
-      imageUrl: `/generated/${dynasty}/${genFilename}`,
+      // Prefer returning the external AI URL directly to the frontend
+      // as it's more reliable than Vercel's /tmp storage
+      imageUrl: imageUrl || `/generated/${dynasty}/${genFilename}`,
       status: 'completed',
       apiResult
     })

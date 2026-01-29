@@ -79,9 +79,32 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next()
 })
 
-// Serve static files
-app.use('/uploads', express.static(UPLOADS_DIR))
-app.use('/generated', express.static(GENERATED_DIR))
+// Serve static files (Robust version for Vercel Serverless)
+const serveFromTmp = (basePath: string, dir: string) => {
+  return (req: Request, res: Response) => {
+    const filename = req.params[0]
+    const filePath = path.join(dir, filename)
+    
+    if (fs.existsSync(filePath)) {
+      const ext = path.extname(filePath).toLowerCase()
+      const contentType = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.webp': 'image/webp'
+      }[ext] || 'application/octet-stream'
+      
+      res.setHeader('Content-Type', contentType)
+      res.setHeader('Cache-Control', 'public, max-age=31536000')
+      fs.createReadStream(filePath).pipe(res)
+    } else {
+      res.status(404).send('File not found')
+    }
+  }
+}
+
+app.get('/uploads/*', serveFromTmp('/uploads', UPLOADS_DIR))
+app.get('/generated/*', serveFromTmp('/generated', GENERATED_DIR))
 
 /**
  * API Routes
