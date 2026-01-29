@@ -2,13 +2,23 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
-import { DynastySelector } from '../components/DynastySelector'
-import { useAppStore, type Gender } from '../store'
-import { RotateCcw, Sparkles, User, UserCheck } from 'lucide-react'
+import { useAppStore, type Gender, type Dynasty } from '../store'
+import { RotateCcw, Sparkles, User, UserCheck, Landmark } from 'lucide-react'
 import { clsx } from 'clsx'
 
+const DYNASTIES: { id: Dynasty; name: string }[] = [
+  { id: 'tang', name: '大唐' },
+  { id: 'song', name: '大宋' },
+  { id: 'ming', name: '大明' },
+  { id: 'qing', name: '大清' },
+]
+
 const Home: React.FC = () => {
-  const { previewUrl, setPreviewUrl, setImage, selectedDynasty, selectedGender, setGender } = useAppStore()
+  const { 
+    previewUrl, setPreviewUrl, setImage, 
+    selectedDynasty, setDynasty, 
+    selectedGender, setGender 
+  } = useAppStore()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -29,16 +39,64 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background relative">
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-30 p-4 text-center bg-gradient-to-b from-black/50 to-transparent">
-        <h1 className="text-white text-2xl font-serif font-bold tracking-widest drop-shadow-lg">
+    <div className="flex flex-col h-screen bg-background relative overflow-hidden">
+      {/* Header - Right Aligned */}
+      <div className="absolute top-0 right-0 z-30 p-4 text-right bg-gradient-to-l from-black/50 to-transparent">
+        <h1 className="text-white text-xl font-serif font-bold tracking-widest drop-shadow-lg">
           中華穿越鏡
         </h1>
-        <p className="text-white/80 text-xs mt-1 font-sans">
-          選擇朝代 · 拍攝照片 · 穿越歷史
-        </p>
       </div>
+
+      {/* Top Left Selection Panel */}
+      {!previewUrl && (
+        <div className="absolute top-4 left-4 z-50 flex flex-col gap-6 pointer-events-none">
+          {/* Gender Select */}
+          <div className="flex flex-col gap-2 pointer-events-auto">
+            <span className="text-white/60 text-[10px] font-bold ml-1 flex items-center gap-1 uppercase tracking-wider">
+              <User size={10} /> 性別
+            </span>
+            <div className="flex gap-2">
+              {(['female', 'male'] as Gender[]).map((g) => (
+                <button
+                  key={g}
+                  onClick={() => setGender(g)}
+                  className={clsx(
+                    "px-4 py-1.5 rounded-md text-xs font-bold transition-all border backdrop-blur-md",
+                    selectedGender === g 
+                      ? "bg-primary text-white border-primary shadow-lg" 
+                      : "bg-black/40 text-white/70 border-white/10 hover:bg-black/60"
+                  )}
+                >
+                  {g === 'female' ? '女性' : '男性'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Dynasty Select */}
+          <div className="flex flex-col gap-2 pointer-events-auto">
+            <span className="text-white/60 text-[10px] font-bold ml-1 flex items-center gap-1 uppercase tracking-wider">
+              <Landmark size={10} /> 朝代
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              {DYNASTIES.map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => setDynasty(d.id)}
+                  className={clsx(
+                    "px-4 py-1.5 rounded-md text-xs font-bold transition-all border backdrop-blur-md text-center",
+                    selectedDynasty === d.id 
+                      ? "bg-primary text-white border-primary shadow-lg" 
+                      : "bg-black/40 text-white/70 border-white/10 hover:bg-black/60"
+                  )}
+                >
+                  {d.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 relative">
@@ -53,10 +111,10 @@ const Home: React.FC = () => {
             />
             
             {/* Overlay Actions */}
-            <div className="absolute bottom-0 left-0 right-0 p-8 flex justify-center gap-8 bg-gradient-to-t from-black/80 to-transparent pt-20">
+            <div className="absolute bottom-10 left-0 right-0 p-8 flex justify-center gap-8 bg-gradient-to-t from-black/80 to-transparent pt-20">
               <button 
                 onClick={handleRetake}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-all font-medium"
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-all font-medium border border-white/10"
               >
                 <RotateCcw size={20} />
                 重拍
@@ -73,34 +131,6 @@ const Home: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Gender & Dynasty Selector - Only show in Camera mode */}
-      {!previewUrl && (
-        <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-20 pb-4 pointer-events-none">
-          <div className="pointer-events-auto flex flex-col gap-4">
-            {/* Gender Selection */}
-            <div className="flex justify-center gap-4 px-4">
-              {(['female', 'male'] as Gender[]).map((g) => (
-                <button
-                  key={g}
-                  onClick={() => setGender(g)}
-                  className={clsx(
-                    "flex items-center gap-2 px-6 py-2 rounded-full transition-all border",
-                    selectedGender === g 
-                      ? "bg-primary text-white border-primary shadow-lg scale-105" 
-                      : "bg-black/40 text-white/70 border-white/20 backdrop-blur-md"
-                  )}
-                >
-                  {g === 'female' ? <User size={18} /> : <UserCheck size={18} />}
-                  <span className="font-medium">{g === 'female' ? '女性服飾' : '男性服飾'}</span>
-                </button>
-              ))}
-            </div>
-
-            <DynastySelector />
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -111,11 +111,11 @@ export const Camera: React.FC = () => {
         <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/20"></div>
       </div>
 
-      <div className="absolute bottom-60 left-0 right-0 flex justify-center items-center gap-10 z-50">
+      <div className="absolute bottom-12 left-0 right-0 flex justify-center items-center gap-10 z-50">
         <button 
           onClick={switchCamera}
           title="切換鏡頭"
-          className="p-4 rounded-full bg-white/20 backdrop-blur-xl hover:bg-white/40 transition-all text-white pointer-events-auto border border-white/10"
+          className="p-4 rounded-full bg-white/20 backdrop-blur-xl hover:bg-white/40 transition-all text-white pointer-events-auto border border-white/10 shadow-lg"
         >
           <SwitchCamera size={28} />
         </button>
@@ -123,7 +123,7 @@ export const Camera: React.FC = () => {
         <button 
           onClick={capture}
           title="拍照"
-          className="p-1.5 rounded-full border-4 border-white hover:border-primary transition-all group shadow-[0_0_30px_rgba(0,0,0,0.5)] pointer-events-auto bg-white/10 backdrop-blur-sm"
+          className="p-1.5 rounded-full border-4 border-white hover:border-primary transition-all group shadow-[0_0_40px_rgba(0,0,0,0.6)] pointer-events-auto bg-white/10 backdrop-blur-sm"
         >
           <div className="w-20 h-20 rounded-full bg-primary group-hover:scale-90 transition-transform flex items-center justify-center shadow-inner">
              <CameraIcon className="text-white" size={40} />
