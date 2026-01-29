@@ -9,6 +9,7 @@ interface AppState {
   previewUrl: string | null
   selectedDynasty: Dynasty
   selectedGender: Gender
+  keepBackground: boolean
   result: {
     imageUrl: string
     id: string
@@ -21,6 +22,7 @@ interface AppState {
   setPreviewUrl: (url: string | null) => void
   setDynasty: (dynasty: Dynasty) => void
   setGender: (gender: Gender) => void
+  setKeepBackground: (keep: boolean) => void
   setResult: (result: AppState['result']) => void
   setIsProcessing: (isProcessing: boolean) => void
   setError: (error: string | null) => void
@@ -32,6 +34,7 @@ export const useAppStore = create<AppState>((set) => ({
   previewUrl: null,
   selectedDynasty: 'tang',
   selectedGender: 'female',
+  keepBackground: false,
   result: null,
   isProcessing: false,
   error: null,
@@ -40,6 +43,7 @@ export const useAppStore = create<AppState>((set) => ({
   setPreviewUrl: (url) => set({ previewUrl: url }),
   setDynasty: (dynasty) => set({ selectedDynasty: dynasty }),
   setGender: (gender) => set({ selectedGender: gender }),
+  setKeepBackground: (keep) => set({ keepBackground: keep }),
   setResult: (result) => set({ result }),
   setIsProcessing: (isProcessing) => set({ isProcessing }),
   setError: (error) => set({ error }),
@@ -48,6 +52,7 @@ export const useAppStore = create<AppState>((set) => ({
     previewUrl: null,
     result: null,
     isProcessing: false,
-    error: null
+    error: null,
+    keepBackground: false
   })
 }))

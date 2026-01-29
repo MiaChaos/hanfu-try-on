@@ -103,34 +103,44 @@ export const Camera: React.FC = () => {
         className={`w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
       />
       
-      {/* Overlay Guides */}
-      <div className="absolute inset-0 pointer-events-none border-[1px] border-white/20 m-4 rounded-xl">
-        <div className="absolute top-1/3 left-0 right-0 h-px bg-white/20"></div>
-        <div className="absolute top-2/3 left-0 right-0 h-px bg-white/20"></div>
-        <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20"></div>
-        <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/20"></div>
+      {/* Overlay Guides - Square Crop Indicator */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+        {/* The square frame */}
+        <div className="w-[90vw] h-[90vw] max-w-[512px] max-h-[512px] border-2 border-primary shadow-[0_0_0_2000px_rgba(0,0,0,0.5)] rounded-lg relative">
+          {/* Corner accents */}
+          <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-md"></div>
+          <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-md"></div>
+          <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-md"></div>
+          <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-md"></div>
+          
+          {/* Rule of thirds within the square */}
+          <div className="absolute top-1/3 left-0 right-0 h-px bg-white/20"></div>
+          <div className="absolute top-2/3 left-0 right-0 h-px bg-white/20"></div>
+          <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20"></div>
+          <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/20"></div>
+        </div>
       </div>
 
-      <div className="absolute bottom-12 left-0 right-0 flex justify-center items-center gap-10 z-50">
+      <div className="absolute bottom-16 left-0 right-0 flex justify-center items-center gap-12 z-50">
         <button 
           onClick={switchCamera}
           title="切換鏡頭"
-          className="p-4 rounded-full bg-white/20 backdrop-blur-xl hover:bg-white/40 transition-all text-white pointer-events-auto border border-white/10 shadow-lg"
+          className="p-5 rounded-full bg-white/20 backdrop-blur-2xl hover:bg-white/40 transition-all text-white pointer-events-auto border border-white/20 shadow-xl active:scale-90"
         >
-          <SwitchCamera size={28} />
+          <SwitchCamera size={32} />
         </button>
         
         <button 
           onClick={capture}
           title="拍照"
-          className="p-1.5 rounded-full border-4 border-white hover:border-primary transition-all group shadow-[0_0_40px_rgba(0,0,0,0.6)] pointer-events-auto bg-white/10 backdrop-blur-sm"
+          className="p-2 rounded-full border-4 border-white hover:border-primary transition-all group shadow-[0_0_50px_rgba(0,0,0,0.8)] pointer-events-auto bg-white/10 backdrop-blur-md active:scale-95"
         >
-          <div className="w-20 h-20 rounded-full bg-primary group-hover:scale-90 transition-transform flex items-center justify-center shadow-inner">
-             <CameraIcon className="text-white" size={40} />
+          <div className="w-24 h-24 rounded-full bg-primary group-hover:scale-90 transition-transform flex items-center justify-center shadow-inner">
+             <CameraIcon className="text-white" size={48} />
           </div>
         </button>
         
-        <div className="w-16"></div> {/* Spacer for balance */}
+        <div className="w-20"></div> {/* Spacer for balance */}
       </div>
 
       <canvas ref={canvasRef} className="hidden" />

@@ -6,7 +6,7 @@ import { generateOneShot } from '../api'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 const Generate: React.FC = () => {
-  const { imageFile, selectedDynasty, selectedGender, setResult, setError, error } = useAppStore()
+  const { imageFile, selectedDynasty, selectedGender, keepBackground, setResult, setError, error } = useAppStore()
   const navigate = useNavigate()
   const [progress, setProgress] = useState(0)
 
@@ -32,7 +32,7 @@ const Generate: React.FC = () => {
           })
         }, 800)
 
-        const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender)
+        const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender, keepBackground)
         
         clearInterval(interval)
         setProgress(100)

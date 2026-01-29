@@ -84,7 +84,7 @@ router.post('/upload', (req, res, next) => {
 // POST /api/generate
 router.post('/generate', async (req, res) => {
   console.log(`[GENERATE] Request body:`, req.body)
-  const { imageId, dynasty, gender } = req.body
+  const { imageId, dynasty, gender, keepBackground } = req.body
   
   if (!imageId || !dynasty) {
     return res.status(400).json({ success: false, message: 'Missing imageId or dynasty' })
@@ -93,6 +93,7 @@ router.post('/generate', async (req, res) => {
   try {
     const safeDynasty = sanitize(dynasty)
     const safeGender = sanitize(gender || 'female')
+    const safeKeepBackground = keepBackground === true || keepBackground === 'true'
     const safeImageId = sanitize(imageId.split('.')[0]) + path.extname(imageId)
     
     const uploadDir = path.join(UPLOADS_DIR, safeDynasty)
@@ -125,11 +126,12 @@ router.post('/generate', async (req, res) => {
     let apiResult = null
     if (apiKey) {
       try {
-         console.log(`[GENERATE] Calling Qwen API for dynasty: ${safeDynasty}, gender: ${safeGender}`)
+         console.log(`[GENERATE] Calling Qwen API for dynasty: ${safeDynasty}, gender: ${safeGender}, keepBackground: ${safeKeepBackground}`)
          apiResult = await generateHistoricalImage({ 
            imagePath, 
            dynasty: safeDynasty, 
            gender: safeGender,
+           keepBackground: safeKeepBackground,
            apiKey 
          })
          console.log(`[GENERATE] Qwen API call successful`)
@@ -216,7 +218,8 @@ router.get('/result/:filename', (req, res) => {
 router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
   const dynasty = sanitize(req.body.dynasty || 'tang')
   const gender = sanitize(req.body.gender || 'female')
-  console.log(`[ONE-SHOT] Received request. Dynasty: ${dynasty}, Gender: ${gender}`)
+  const keepBackground = req.body.keepBackground === 'true'
+  console.log(`[ONE-SHOT] Received request. Dynasty: ${dynasty}, Gender: ${gender}, KeepBackground: ${keepBackground}`)
   
   try {
     if (!req.file) {
@@ -231,7 +234,7 @@ router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
     }
 
     console.log(`[ONE-SHOT] Calling AI service (Qwen Edit)...`)
-    const apiResult = await generateHistoricalImage({ imagePath, dynasty, gender, apiKey })
+    const apiResult = await generateHistoricalImage({ imagePath, dynasty, gender, keepBackground, apiKey })
 
     let imageUrl = ''
     // Handle qwen-image-edit-max response format
