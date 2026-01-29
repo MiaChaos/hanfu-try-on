@@ -103,21 +103,27 @@ export const Camera: React.FC = () => {
         className={`w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
       />
       
-      {/* Overlay Guides - Square Crop Indicator */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-        {/* The square frame */}
-        <div className="w-[90vw] h-[90vw] max-w-[512px] max-h-[512px] border-2 border-primary shadow-[0_0_0_2000px_rgba(0,0,0,0.5)] rounded-lg relative">
-          {/* Corner accents */}
-          <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-md"></div>
-          <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-md"></div>
-          <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-md"></div>
-          <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-md"></div>
+      {/* Overlay Guides - Full Height Square Crop Indicator */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
+        {/* The square frame: height is 100%, width is same as height to be square */}
+        <div className="h-full aspect-square border-4 border-primary shadow-[0_0_0_2000px_rgba(0,0,0,0.6)] relative">
+          {/* Corner accents - larger and more visible */}
+          <div className="absolute top-0 left-0 w-12 h-12 border-t-8 border-l-8 border-primary"></div>
+          <div className="absolute top-0 right-0 w-12 h-12 border-t-8 border-r-8 border-primary"></div>
+          <div className="absolute bottom-0 left-0 w-12 h-12 border-b-8 border-l-8 border-primary"></div>
+          <div className="absolute bottom-0 right-0 w-12 h-12 border-b-8 border-r-8 border-primary"></div>
           
           {/* Rule of thirds within the square */}
-          <div className="absolute top-1/3 left-0 right-0 h-px bg-white/20"></div>
-          <div className="absolute top-2/3 left-0 right-0 h-px bg-white/20"></div>
-          <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20"></div>
-          <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/20"></div>
+          <div className="absolute top-1/3 left-0 right-0 h-px bg-white/30"></div>
+          <div className="absolute top-2/3 left-0 right-0 h-px bg-white/30"></div>
+          <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/30"></div>
+          <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/30"></div>
+
+          {/* Center Crosshair */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center">
+            <div className="absolute w-full h-0.5 bg-primary/40"></div>
+            <div className="absolute h-full w-0.5 bg-primary/40"></div>
+          </div>
         </div>
       </div>
 
