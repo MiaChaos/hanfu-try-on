@@ -1,57 +1,73 @@
-# React + TypeScript + Vite
+# 中華穿越鏡 (Hanfu AI Try-On) 🏮
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+「中華穿越鏡」是一款基於領先 AI 技術的動態歷史換裝應用。用戶只需拍攝一張照片，即可瞬間「穿越」時空，穿上大唐、大宋、大明、大清等不同朝代的傳統服飾，親身感受中華文化的厚重與美學。
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🏫 適合場景：校園「中華文化日」活動
 
-## Expanding the ESLint configuration
+本項目專為學校教育、文化博覽、社區活動設計，具備以下教育價值：
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **沉浸式體驗**：通過 AI 換裝，讓學生從「觀察者」變為「參與者」，激發對傳統漢服的濃厚興趣。
+- **寓教於樂**：内置「服飾百科」，在換裝的同時學習各朝代的歷史背景、服飾特點與文化內涵。
+- **互動互動性強**：即拍即生成，一鍵保存/分享成果，是校園活動、展位攤位的「吸睛」利器。
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+
+## ✨ 核心亮點
+
+### 1. 深度面部保護算法 🛡️
+採用先進的圖像編輯模型指令，**強制保留用戶原始五官特徵**。換裝後臉型、神態與本人 100% 一致，確保「穿越」體驗真實自然，不變形、不換臉。
+
+### 2. 多朝代精確適配 👗
+- **大唐盛世**：齊胸襦裙、圓領袍，展現博大華貴。
+- **風雅大宋**：清雅褙子、襴衫，體現文人風骨。
+- **大明風華**：馬面裙、襖裙，端莊典雅。
+- **清宮舊夢**：旗裝、長袍馬褂，滿漢交融。
+
+### 3. 智能場景切換 🏞️
+支持**「歷史背景」與「實景拍攝」**雙模式切換。既可以選擇 AI 生成的古風建築背景，也可以保留校園實景，僅更換服飾，滿足不同拍攝需求。
+
+### 4. 極簡交互設計 📱
+- **正方形取景框**：大尺寸「上下貼邊」引導框，幫助學生輕鬆對準構圖。
+- **大按鈕優化**：針對移動設備優化的超大操作按鈕，適配各類手機與平板電腦。
+- **百科查閱**：一鍵進入百科頁面，獲取最權威的服飾科普信息。
+
+---
+
+## 🛠️ 技術架構
+
+- **前端**：React 18 + TypeScript + Vite + Tailwind CSS
+- **後端**：Node.js + Express (部署於 Vercel Serverless)
+- **AI 引擎**：阿里雲 DashScope (通義萬相 qwen-image-edit-max)
+- **圖標庫**：Lucide React
+
+---
+
+## 🚀 快速開始
+
+### 環境變量配置
+在根目錄創建 `.env` 文件，填入以下配置：
+```env
+VITE_API_BASE_URL=/api
+QWEN_API_KEY=你的阿里雲API密鑰
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 安裝與運行
+```bash
+# 安裝依賴
+npm install
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# 啟動開發服務器
+npm run dev
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# 構建生產環境
+npm run build
 ```
+
+---
+
+## 📜 文化小知識
+每個朝代的服飾都是歷史的縮影。透過「中華穿越鏡」，我們希望不僅僅展示華麗的衣服，更希望傳遞中華民族「衣冠王國」的文化自信與美學傳承。
+
+**現在，就讓我們開始這場時空之旅吧！** 🚀
