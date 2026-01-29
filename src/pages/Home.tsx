@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
 import { useAppStore, type Gender, type Dynasty } from '../store'
-import { RotateCcw, Sparkles, User, UserCheck, Landmark } from 'lucide-react'
+import { RotateCcw, Sparkles, User, UserCheck, Landmark, BookOpen } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const DYNASTIES: { id: Dynasty; name: string }[] = [
@@ -45,6 +45,12 @@ const Home: React.FC = () => {
         <h1 className="text-white text-xl font-serif font-bold tracking-widest drop-shadow-lg">
           中華穿越鏡
         </h1>
+        <button 
+          onClick={() => navigate('/info')}
+          className="mt-2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 backdrop-blur-md text-primary text-[10px] font-bold border border-primary/30 ml-auto"
+        >
+          <BookOpen size={12} /> 服飾百科
+        </button>
       </div>
 
       {/* Top Left Selection Panel */}
