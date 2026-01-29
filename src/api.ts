@@ -17,6 +17,24 @@ export const uploadImage = async (file: File, dynasty: string) => {
   return response.json()
 }
 
+export const generateOneShot = async (file: File, dynasty: string) => {
+  const formData = new FormData()
+  formData.append('dynasty', dynasty)
+  formData.append('image', file)
+  
+  const response = await fetch('/api/generate-one-shot', {
+    method: 'POST',
+    body: formData
+  })
+  
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.message || 'Generation failed')
+  }
+  
+  return response.json()
+}
+
 export const generateImage = async (imageId: string, dynasty: string) => {
   const response = await fetch('/api/generate', {
     method: 'POST',

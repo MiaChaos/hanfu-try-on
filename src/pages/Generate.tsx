@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
-import { uploadImage, generateImage } from '../api'
+import { generateOneShot } from '../api'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 const Generate: React.FC = () => {
@@ -21,23 +21,19 @@ const Generate: React.FC = () => {
         setError(null)
         setProgress(10)
         
-        // 1. Upload
-        const uploadRes = await uploadImage(imageFile, selectedDynasty)
-        setProgress(40)
-        
-        // 2. Generate
-        // Fake progress animation for better UX while waiting for API
+        // Use One-Shot API for Vercel Serverless stability
+        // This combines upload and generation in a single request
         const interval = setInterval(() => {
           setProgress(prev => {
-            if (prev >= 90) {
+            if (prev >= 95) {
               clearInterval(interval)
-              return 90
+              return 95
             }
-            return prev + 5
+            return prev + 2
           })
-        }, 500)
+        }, 800)
 
-        const genRes = await generateImage(uploadRes.imageId, selectedDynasty)
+        const genRes = await generateOneShot(imageFile, selectedDynasty)
         
         clearInterval(interval)
         setProgress(100)
@@ -53,8 +49,8 @@ const Generate: React.FC = () => {
         }, 500)
         
       } catch (err: any) {
-        console.error(err)
-        setError(err.message || 'Processing failed')
+        console.error('Processing error:', err)
+        setError(err.message || '穿越超時或失敗，請重試')
       }
     }
 
