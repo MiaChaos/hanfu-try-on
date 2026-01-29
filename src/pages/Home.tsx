@@ -3,11 +3,12 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
 import { DynastySelector } from '../components/DynastySelector'
-import { useAppStore } from '../store'
-import { RotateCcw, Sparkles } from 'lucide-react'
+import { useAppStore, type Gender } from '../store'
+import { RotateCcw, Sparkles, User, UserCheck } from 'lucide-react'
+import { clsx } from 'clsx'
 
 const Home: React.FC = () => {
-  const { previewUrl, setPreviewUrl, setImage, selectedDynasty } = useAppStore()
+  const { previewUrl, setPreviewUrl, setImage, selectedDynasty, selectedGender, setGender } = useAppStore()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -73,10 +74,29 @@ const Home: React.FC = () => {
         )}
       </div>
 
-      {/* Dynasty Selector - Only show in Camera mode */}
+      {/* Gender & Dynasty Selector - Only show in Camera mode */}
       {!previewUrl && (
         <div className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-20 pb-4 pointer-events-none">
-          <div className="pointer-events-auto">
+          <div className="pointer-events-auto flex flex-col gap-4">
+            {/* Gender Selection */}
+            <div className="flex justify-center gap-4 px-4">
+              {(['female', 'male'] as Gender[]).map((g) => (
+                <button
+                  key={g}
+                  onClick={() => setGender(g)}
+                  className={clsx(
+                    "flex items-center gap-2 px-6 py-2 rounded-full transition-all border",
+                    selectedGender === g 
+                      ? "bg-primary text-white border-primary shadow-lg scale-105" 
+                      : "bg-black/40 text-white/70 border-white/20 backdrop-blur-md"
+                  )}
+                >
+                  {g === 'female' ? <User size={18} /> : <UserCheck size={18} />}
+                  <span className="font-medium">{g === 'female' ? '女性服飾' : '男性服飾'}</span>
+                </button>
+              ))}
+            </div>
+
             <DynastySelector />
           </div>
         </div>

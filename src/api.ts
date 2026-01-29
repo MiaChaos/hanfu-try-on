@@ -17,9 +17,10 @@ export const uploadImage = async (file: File, dynasty: string) => {
   return response.json()
 }
 
-export const generateOneShot = async (file: File, dynasty: string) => {
+export const generateOneShot = async (file: File, dynasty: string, gender: string) => {
   const formData = new FormData()
   formData.append('dynasty', dynasty)
+  formData.append('gender', gender)
   formData.append('image', file)
   
   const response = await fetch('/api/generate-one-shot', {

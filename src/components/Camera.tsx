@@ -55,17 +55,32 @@ export const Camera: React.FC = () => {
       const video = videoRef.current
       const canvas = canvasRef.current
       
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
+      // Set target size to 512x512
+      const targetSize = 512
+      canvas.width = targetSize
+      canvas.height = targetSize
       
       const ctx = canvas.getContext('2d')
       if (ctx) {
+        // Calculate crop to make it square
+        const sourceWidth = video.videoWidth
+        const sourceHeight = video.videoHeight
+        const minSize = Math.min(sourceWidth, sourceHeight)
+        const startX = (sourceWidth - minSize) / 2
+        const startY = (sourceHeight - minSize) / 2
+
         // Mirror if user facing
         if (facingMode === 'user') {
-          ctx.translate(canvas.width, 0)
+          ctx.translate(targetSize, 0)
           ctx.scale(-1, 1)
         }
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        
+        // Draw cropped and resized image
+        ctx.drawImage(
+          video, 
+          startX, startY, minSize, minSize, // Source crop
+          0, 0, targetSize, targetSize     // Destination size
+        )
         
         canvas.toBlob((blob) => {
           if (blob) {
@@ -73,7 +88,7 @@ export const Camera: React.FC = () => {
             setImage(file)
             setPreviewUrl(URL.createObjectURL(blob))
           }
-        }, 'image/jpeg', 0.9)
+        }, 'image/jpeg', 0.8) // Use 0.8 quality for balance
       }
     }
   }

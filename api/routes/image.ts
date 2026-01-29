@@ -208,14 +208,15 @@ router.get('/result/:filename', (req, res) => {
 // POST /api/generate-one-shot
 // A more robust endpoint for Serverless (Vercel) that handles upload and generation in one request
 router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
-  console.log(`[ONE-SHOT] Received request. Dynasty: ${req.body.dynasty}`)
+  const dynasty = sanitize(req.body.dynasty || 'tang')
+  const gender = sanitize(req.body.gender || 'female')
+  console.log(`[ONE-SHOT] Received request. Dynasty: ${dynasty}, Gender: ${gender}`)
   
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No image uploaded' })
     }
 
-    const dynasty = sanitize(req.body.dynasty || 'tang')
     const imagePath = req.file.path
     const apiKey = process.env.QWEN_API_KEY
 
@@ -223,8 +224,33 @@ router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
       throw new Error('QWEN_API_KEY not configured')
     }
 
-    console.log(`[ONE-SHOT] Calling AI service...`)
-    const apiResult = await generateHistoricalImage({ imagePath, dynasty, apiKey })
+    console.log(`[ONE-SHOT] Calling AI service (Wanx)...`)
+    const apiResult = await generateHistoricalImage({ imagePath, dynasty, gender, apiKey })
+
+    // If it's an async task, we should poll or return task_id.
+    // For simplicity in this demo, let's try to poll for 30s in the backend if not on Vercel,
+    // otherwise return task_id and let frontend handle it (or mock for now).
+    
+    let imageUrl = ''
+    if (apiResult.output?.task_id) {
+       // Simple polling implementation
+       const taskId = apiResult.output.task_id
+       let status = 'PENDING'
+       let attempts = 0
+       while ((status === 'PENDING' || status === 'RUNNING') && attempts < 15) {
+          await new Promise(r => setTimeout(r, 2000))
+          const pollRes = await fetch(`https://dashscope-intl.aliyuncs.com/api/v1/tasks/${taskId}`, {
+            headers: { 'Authorization': `Bearer ${apiKey}` }
+          })
+          const pollData: any = await pollRes.json()
+          status = pollData.output?.task_status
+          if (status === 'SUCCEEDED') {
+            imageUrl = pollData.output?.results?.[0]?.url || pollData.output?.url
+            break
+          }
+          attempts++
+       }
+    }
 
     const genDir = path.join(GENERATED_DIR, dynasty)
     if (!fs.existsSync(genDir)) fs.mkdirSync(genDir, { recursive: true })
@@ -232,8 +258,16 @@ router.post('/generate-one-shot', upload.single('image'), async (req, res) => {
     const genFilename = `gen-${req.file.filename}`
     const genPath = path.join(genDir, genFilename)
     
-    // In real app: download from apiResult. For now, simulate by copying
-    fs.copyFileSync(imagePath, genPath)
+    if (imageUrl) {
+      console.log(`[ONE-SHOT] Image generated: ${imageUrl}`)
+      // Download the image
+      const imgRes = await fetch(imageUrl)
+      const buffer = Buffer.from(await imgRes.arrayBuffer())
+      fs.writeFileSync(genPath, buffer)
+    } else {
+      console.warn(`[ONE-SHOT] Generation timed out or failed to return URL, using original as fallback`)
+      fs.copyFileSync(imagePath, genPath)
+    }
 
     res.json({
       success: true,

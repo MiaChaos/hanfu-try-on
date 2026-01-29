@@ -1,95 +1,71 @@
 
 import fs from 'fs'
 
-const API_URL = 'https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation'
+const API_URL = 'https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/image2image/image-to-image'
 
 interface GenerateOptions {
   imagePath: string
   dynasty: string
+  gender: string
   apiKey: string
 }
 
-export const generateHistoricalImage = async ({ imagePath, dynasty, apiKey }: GenerateOptions) => {
+export const generateHistoricalImage = async ({ imagePath, dynasty, gender, apiKey }: GenerateOptions) => {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => {
-    console.warn(`[QWEN] Request timed out for ${imagePath}`)
+    console.warn(`[WANX] Request timed out for ${imagePath}`)
     controller.abort()
-  }, 30000)
+  }, 60000)
 
   try {
-    console.log(`[QWEN] Preparing request for ${imagePath}, dynasty: ${dynasty}`)
+    console.log(`[WANX] Preparing request for ${imagePath}, dynasty: ${dynasty}, gender: ${gender}`)
     
     if (!fs.existsSync(imagePath)) {
-      console.error(`[QWEN] File not found: ${imagePath}`)
       throw new Error(`Image file not found at ${imagePath}`)
-    }
-
-    const stats = fs.statSync(imagePath)
-    console.log(`[QWEN] Image size: ${stats.size} bytes`)
-    
-    if (stats.size > 10 * 1024 * 1024) {
-      console.warn(`[QWEN] Image too large: ${stats.size}`)
-      throw new Error('Image file is too large (max 10MB)')
     }
 
     const imageBuffer = fs.readFileSync(imagePath)
     const base64Image = imageBuffer.toString('base64')
-    console.log(`[QWEN] Base64 conversion completed (length: ${base64Image.length})`)
 
-    const prompt = `將照片中的人物服裝更換為${dynasty}朝代的傳統服飾，保持人物面部表情和姿勢不變，背景適配該朝代風格。`
+    const prompt = `將照片中的人物服裝更換為${dynasty}朝代的${gender === 'male' ? '男裝' : '女裝'}傳統服飾（漢服），保持人物面部特徵、表情和姿勢完全一致，背景適配該朝代風格，高清，細節豐富。`
 
-    console.log(`[QWEN] Sending request to DashScope...`)
+    console.log(`[WANX] Sending request to DashScope (Wanx V1)...`)
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
+        'X-DashScope-Async': 'enable'
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: 'qwen-vl-max',
+        model: 'wanx-v1',
         input: {
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a professional historical costume designer.'
-            },
-            {
-              role: 'user',
-              content: [
-                { image: `data:image/jpeg;base64,${base64Image}` },
-                { text: prompt }
-              ]
-            }
-          ]
+          image_base64: base64Image,
+          prompt: prompt
         },
         parameters: {
-          result_format: 'message'
+          style: '<auto>',
+          size: '512*512',
+          n: 1
         }
       })
     })
 
     clearTimeout(timeoutId)
-    console.log(`[QWEN] Received response from DashScope, status: ${response.status}`)
-
     const data: any = await response.json()
-    console.log(`[QWEN] Response body parsed`)
     
     if (!response.ok) {
-      console.error(`[QWEN] API Error:`, JSON.stringify(data))
-      const errorMsg = data.message || data.error?.message || `API error ${response.status}`
-      throw new Error(errorMsg)
+      console.error(`[WANX] API Error:`, JSON.stringify(data))
+      throw new Error(data.message || data.error?.message || `API error ${response.status}`)
     }
 
-    console.log(`[QWEN] Generation successful`)
+    // Wanx is asynchronous, we get a task_id
+    console.log(`[WANX] Task created: ${data.output?.task_id}`)
     return data
   } catch (error: any) {
     clearTimeout(timeoutId)
-    if (error.name === 'AbortError') {
-      console.error(`[QWEN] Request aborted due to timeout`)
-      throw new Error('Qwen API request timed out')
-    }
-    console.error('[QWEN] Service Error:', error.stack || error.message)
+    console.error('[WANX] Service Error:', error.stack || error.message)
     throw error
   }
 }
