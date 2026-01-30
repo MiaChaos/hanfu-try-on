@@ -98,10 +98,14 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
 
     const prompt = `請對這張圖片進行「大師級」人像換裝編輯：
     1. 【核心禁令 - 絕對保護面部】：嚴禁以任何形式修改照片中人物的面部特徵！必須完整保留原圖中的眼睛形狀、瞳孔、鼻子輪廓、嘴部特徵、臉型曲線、五官比例、表情神態以及所有身份特徵。人物的面部必須與原圖100%完全一致，如同照片本身。
-    2. 【服飾更換】：僅將人物穿著的現代服裝更換為【${dynasty}朝代】的【${gender === 'male' ? '男裝' : '女裝'}】。身份設定為【${role === 'emperor' ? '皇室成員' : role === 'official' ? '官員/貴族' : '平民'}】。具體要求：${clothingDescription}
-    3. 【藝術細節】：服飾面料應具有真實的絲綢或棉麻質感，刺繡紋樣需清晰細膩，符合歷史實物特徵。
+    2. 【構圖與範圍】：
+       - 嚴格保持原圖的構圖比例和人物姿勢，不得裁剪或縮放。
+       - 對於超出圖片畫面範圍的服飾部分（如長裙下擺、寬大袖口），如果原圖構圖未包含，則無需繪製，自然截斷即可。
+       - 重點處理畫面內可見的服飾區域，確保與身體動態完美貼合。
+    3. 【服飾更換】：僅將人物穿著的現代服裝更換為【${dynasty}朝代】的【${gender === 'male' ? '男裝' : '女裝'}】。身份設定為【${role === 'emperor' ? '皇室成員' : role === 'official' ? '官員/貴族' : '平民'}】。具體要求：${clothingDescription}
+    4. 【藝術細節】：服飾面料應具有真實的絲綢或棉麻質感，刺繡紋樣需清晰細膩，符合歷史實物特徵。
     ${backgroundInstruction}
-    5. 【規格要求】：輸出 512x512 的超高清正方形圖像，構圖比例保持人像居中。`
+    6. 【規格要求】：輸出 512x512 的超高清正方形圖像，構圖比例保持人像居中。`
 
     console.log(`[QWEN-EDIT] Sending request to DashScope (qwen-image-edit-max)...`)
     const response = await fetch(API_URL, {
