@@ -3,6 +3,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
 import { Download, Share2, Home as HomeIcon } from 'lucide-react'
+import { downloadImage, shareImage } from '../lib/utils'
 
 const Result: React.FC = () => {
   const { result, reset } = useAppStore()
@@ -14,28 +15,11 @@ const Result: React.FC = () => {
   }
 
   const handleDownload = async () => {
-    try {
-      const response = await fetch(result.imageUrl)
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `history-fashion-${result.dynasty}-${Date.now()}.jpg`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
-    } catch (e) {
-      console.error('Download failed', e)
-      alert('下載失敗')
-    }
+    await downloadImage(result.imageUrl, `history-fashion-${result.dynasty}-${Date.now()}.jpg`)
   }
 
-  const handleShare = () => {
-    // Copy link
-    const shareUrl = window.location.origin + result.imageUrl
-    navigator.clipboard.writeText(shareUrl)
-    alert('圖片鏈接已複製！')
+  const handleShare = async () => {
+    await shareImage(result.imageUrl, '我的歷史換裝照')
   }
 
   const handleHome = () => {

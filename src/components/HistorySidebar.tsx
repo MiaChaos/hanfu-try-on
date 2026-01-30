@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
 import { History, X, Download, Share2, ChevronRight, Clock, Trash2, Trash } from 'lucide-react'
 import { clsx } from 'clsx'
+import { downloadImage, shareImage } from '../lib/utils'
 
 export const HistorySidebar: React.FC = () => {
   const { history, setResult } = useAppStore()
@@ -21,19 +22,11 @@ export const HistorySidebar: React.FC = () => {
   }
 
   const handleDownload = async (url: string, id: string) => {
-    try {
-      const response = await fetch(url)
-      const blob = await response.blob()
-      const downloadUrl = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = downloadUrl
-      link.download = `hanfu-${id}.jpg`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-    } catch (err) {
-      console.error('Download failed:', err)
-    }
+    await downloadImage(url, `hanfu-${id}.jpg`)
+  }
+
+  const handleShare = async (url: string) => {
+    await shareImage(url, '歷史換裝回顧')
   }
 
   if (history.length === 0) return null
@@ -124,6 +117,7 @@ export const HistorySidebar: React.FC = () => {
                       <Download size={14} />
                     </button>
                     <button 
+                      onClick={() => handleShare(item.imageUrl)}
                       className="p-1.5 rounded-md hover:bg-primary/20 text-white/60 hover:text-primary transition-all"
                       title="分享"
                     >
