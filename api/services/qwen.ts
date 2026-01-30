@@ -44,7 +44,7 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, keep
       throw new Error(`Image file not found at ${imagePath}`)
     }
 
-    const imageBuffer = fs.readFileSync(imagePath)
+    const imageBuffer = await fs.promises.readFile(imagePath)
     const base64Image = imageBuffer.toString('base64')
 
     const dynastyDetail = DYNASTY_PROMPTS[dynasty] || DYNASTY_PROMPTS.tang

@@ -1,5 +1,6 @@
 
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 export type Dynasty = 'tang' | 'song' | 'ming' | 'qing'
 export type Gender = 'male' | 'female'
@@ -36,34 +37,48 @@ interface AppState {
   reset: () => void
 }
 
-export const useAppStore = create<AppState>((set) => ({
-  imageFile: null,
-  previewUrl: null,
-  selectedDynasty: 'tang',
-  selectedGender: 'female',
-  keepBackground: false,
-  result: null,
-  history: [],
-  isProcessing: false,
-  error: null,
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      imageFile: null,
+      previewUrl: null,
+      selectedDynasty: 'tang',
+      selectedGender: 'female',
+      keepBackground: false,
+      result: null,
+      history: [],
+      isProcessing: false,
+      error: null,
 
-  setImage: (file) => set({ imageFile: file }),
-  setPreviewUrl: (url) => set({ previewUrl: url }),
-  setDynasty: (dynasty) => set({ selectedDynasty: dynasty }),
-  setGender: (gender) => set({ selectedGender: gender }),
-  setKeepBackground: (keep) => set({ keepBackground: keep }),
-  setResult: (result) => set({ result }),
-  addToHistory: (item) => set((state) => ({ 
-    history: [item, ...state.history].slice(0, 10) // Keep last 10 items
-  })),
-  setIsProcessing: (isProcessing) => set({ isProcessing }),
-  setError: (error) => set({ error }),
-  reset: () => set({
-    imageFile: null,
-    previewUrl: null,
-    result: null,
-    isProcessing: false,
-    error: null,
-    keepBackground: false
-  })
-}))
+      setImage: (file) => set({ imageFile: file }),
+      setPreviewUrl: (url) => set({ previewUrl: url }),
+      setDynasty: (dynasty) => set({ selectedDynasty: dynasty }),
+      setGender: (gender) => set({ selectedGender: gender }),
+      setKeepBackground: (keep) => set({ keepBackground: keep }),
+      setResult: (result) => set({ result }),
+      addToHistory: (item) => set((state) => ({ 
+        history: [item, ...state.history].slice(0, 10) // Keep last 10 items
+      })),
+      setIsProcessing: (isProcessing) => set({ isProcessing }),
+      setError: (error) => set({ error }),
+      reset: () => set({
+        imageFile: null,
+        previewUrl: null,
+        result: null,
+        isProcessing: false,
+        error: null,
+        keepBackground: false
+      })
+    }),
+    {
+      name: 'history-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        history: state.history,
+        selectedDynasty: state.selectedDynasty,
+        selectedGender: state.selectedGender,
+        keepBackground: state.keepBackground
+      })
+    }
+  )
+)

@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
+import { EventHeader } from '../components/EventHeader'
 import { useAppStore, type Gender, type Dynasty } from '../store'
 import { RotateCcw, Sparkles, User, UserCheck, Landmark, BookOpen, Image as ImageIcon, ImageOff } from 'lucide-react'
 import { clsx } from 'clsx'
@@ -42,17 +43,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-[#0a0a0a] relative overflow-hidden">
       {/* Header - Right Aligned */}
-      <div className="absolute top-0 right-0 z-30 p-6 text-right bg-gradient-to-l from-black/80 to-transparent">
-        <h1 className="text-white text-2xl font-serif font-bold tracking-[0.2em] drop-shadow-2xl">
-          中華穿越鏡
-        </h1>
-        <button 
-          onClick={() => navigate('/info')}
-          className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full bg-primary/30 backdrop-blur-2xl text-primary text-xs font-black border border-primary/50 ml-auto hover:bg-primary hover:text-white transition-all active:scale-95 shadow-xl"
-        >
-          <BookOpen size={14} /> 服飾百科
-        </button>
-      </div>
+      <EventHeader />
 
       {/* Top Left Selection Panel */}
       {!previewUrl && (

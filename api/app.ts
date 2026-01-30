@@ -14,13 +14,14 @@ import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import imageRoutes from './routes/image.js'
+import { STORAGE_BASE, UPLOADS_DIR, GENERATED_DIR } from './config.js'
 
 // for esm mode
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // load env
-dotenv.config()
+// dotenv.config() // Loaded in config.ts
 
 if (process.env.NODE_ENV !== 'production') {
   console.log(`[DEBUG] Environment check: NODE_ENV=${process.env.NODE_ENV}, VERCEL=${process.env.VERCEL}`)
@@ -37,11 +38,6 @@ process.on('unhandledRejection', (reason: any, promise) => {
 })
 
 const app: express.Application = express()
-
-// Define storage base directory
-export const STORAGE_BASE = process.env.VERCEL ? '/tmp' : process.cwd()
-export const UPLOADS_DIR = path.join(STORAGE_BASE, 'uploads')
-export const GENERATED_DIR = path.join(STORAGE_BASE, 'generated')
 
 if (process.env.NODE_ENV !== 'production') {
   console.log(`[DEBUG] Storage Base: ${STORAGE_BASE}`)
@@ -61,7 +57,11 @@ try {
   console.error(`[ERROR] Failed to create directories:`, err)
 }
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
@@ -83,7 +83,13 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 const serveFromTmp = (basePath: string, dir: string) => {
   return (req: Request, res: Response) => {
     const filename = req.params[0]
-    const filePath = path.join(dir, filename)
+    // Security: Prevent path traversal
+    const safeFilename = path.normalize(filename).replace(/^(\.\.[\/\\])+/, '')
+    const filePath = path.join(dir, safeFilename)
+    
+    if (!filePath.startsWith(dir)) {
+      return res.status(403).send('Forbidden')
+    }
     
     if (fs.existsSync(filePath)) {
       const ext = path.extname(filePath).toLowerCase()
