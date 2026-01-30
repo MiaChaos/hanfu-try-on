@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
-import { History, X, Download, Share2, ChevronRight, Clock } from 'lucide-react'
+import { History, X, Download, Share2, ChevronRight, Clock, Trash2, Trash } from 'lucide-react'
 import { clsx } from 'clsx'
 
 export const HistorySidebar: React.FC = () => {
@@ -137,7 +137,7 @@ export const HistorySidebar: React.FC = () => {
 
           <div className="p-4 bg-black/60 border-t border-white/5">
             <p className="text-[9px] text-white/30 text-center uppercase tracking-widest">
-              刷新頁面後記錄將自動清除
+              記錄將保留在瀏覽器中
             </p>
           </div>
         </div>

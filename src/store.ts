@@ -38,6 +38,8 @@ interface AppState {
   setKeepBackground: (keep: boolean) => void
   setResult: (result: AppState['result']) => void
   addToHistory: (item: AppState['history'][0]) => void
+  removeFromHistory: (timestamp: number) => void
+  clearHistory: () => void
   setIsProcessing: (isProcessing: boolean) => void
   setError: (error: string | null) => void
   reset: () => void
@@ -69,6 +71,10 @@ export const useAppStore = create<AppState>()(
       addToHistory: (item) => set((state) => ({ 
         history: [item, ...state.history].slice(0, 10) // Keep last 10 items
       })),
+      removeFromHistory: (timestamp) => set((state) => ({
+        history: state.history.filter((item) => item.timestamp !== timestamp)
+      })),
+      clearHistory: () => set({ history: [] }),
       setIsProcessing: (isProcessing) => set({ isProcessing }),
       setError: (error) => set({ error }),
       reset: () => set({
