@@ -192,43 +192,102 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
     ${backgroundInstruction}
     6. 【規格要求】：輸出 512x512 的超高清正方形圖像，構圖比例保持人像居中。`
 
-    console.log(`[QWEN-EDIT] Sending request to DashScope (qwen-image-edit-max)...`)
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model: 'qwen-image-edit-max',
-        input: {
-          messages: [
-            {
-              role: 'user',
-              content: [
-                { image: `data:image/jpeg;base64,${base64Image}` },
-                { text: prompt }
-              ]
-            }
-          ]
-        },
-        parameters: {
-          result_format: 'message'
-        }
-      })
-    })
+    // List of models to try in order
+    const models = ['qwen-image-edit-max', 'qwen-image-edit-plus', 'qwen-image-edit']
+    let lastError: any = null
 
-    clearTimeout(timeoutId)
-    const data: any = await response.json()
-    
-    if (!response.ok) {
-      console.error(`[QWEN-EDIT] API Error:`, JSON.stringify(data))
-      throw new Error(data.message || data.error?.message || `API error ${response.status}`)
+    for (const model of models) {
+      try {
+        console.log(`[QWEN-EDIT] Sending request to DashScope (${model})...`)
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: model,
+            input: {
+              messages: [
+                {
+                  role: 'user',
+                  content: [
+                    { image: `data:image/jpeg;base64,${base64Image}` },
+                    { text: prompt }
+                  ]
+                }
+              ]
+            },
+            parameters: {
+              result_format: 'message'
+            }
+          })
+        })
+
+        const data: any = await response.json()
+        
+        if (!response.ok) {
+          const errorMessage = data.message || data.error?.message || `API error ${response.status}`
+          console.error(`[QWEN-EDIT] Model ${model} failed:`, errorMessage)
+          
+          // Check for 403 or quota/payment related errors
+          if (response.status === 403 || 
+              errorMessage.toLowerCase().includes('quota') || 
+              errorMessage.toLowerCase().includes('payment') ||
+              errorMessage.toLowerCase().includes('bill') ||
+              data.code === 'AccessDenied') {
+            lastError = new Error(errorMessage)
+            console.warn(`[QWEN-EDIT] Quota/Auth error with ${model}, trying next model...`)
+            continue // Try next model
+          }
+          
+          throw new Error(errorMessage)
+        }
+
+        console.log(`[QWEN-EDIT] Request successful with ${model}`)
+        clearTimeout(timeoutId)
+        return data
+      } catch (error: any) {
+        // If it's a network error or other fetch error, we might also want to try next model if it's related to connection?
+        // But for now, let's stick to the logic: if we caught an error above (response not ok), we handled it.
+        // If fetch threw an error (e.g. abort), we probably shouldn't retry if it was aborted.
+        if (error.name === 'AbortError') {
+          throw error
+        }
+        
+        // If it was thrown from the !response.ok block above, it's already handled (either continued or thrown)
+        // If we are here, it means we continued (so this catch block won't be reached for that iteration) 
+        // OR it was a real exception during fetch/json parsing.
+        
+        // Wait, the continue above jumps to the next iteration of the loop, so it skips this catch block.
+        // So this catch block is only for unexpected errors during fetch/json parsing, OR if we re-throwed non-quota errors.
+        
+        // Let's refine:
+        // If we threw inside the try, we land here.
+        // If we want to retry on specific errors, we should do it here.
+        
+        // Actually, my logic above with `continue` inside `try` block works fine.
+        // But if I threw "Error(errorMessage)" for non-quota errors, I land here.
+        // I should re-throw non-quota errors.
+        
+        const errorMessage = error.message || ''
+        if (errorMessage.includes('quota') || 
+            errorMessage.includes('payment') || 
+            errorMessage.includes('403') ||
+            errorMessage.includes('AccessDenied')) {
+           lastError = error
+           console.warn(`[QWEN-EDIT] Error with ${model}: ${errorMessage}. Trying next model...`)
+           continue
+        }
+        
+        throw error
+      }
     }
 
-    console.log(`[QWEN-EDIT] Request successful`)
-    return data
+    clearTimeout(timeoutId)
+    throw lastError || new Error('All models failed')
+
   } catch (error: any) {
     clearTimeout(timeoutId)
     console.error('[QWEN-EDIT] Service Error:', error.stack || error.message)
