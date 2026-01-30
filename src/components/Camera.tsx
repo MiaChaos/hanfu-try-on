@@ -105,9 +105,9 @@ export const Camera: React.FC = () => {
       
       {/* Overlay Guides - Responsive Square Crop Indicator */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        {/* The square frame: max-height: 100%, max-width: 100%, aspect-ratio: 1/1 */}
-        <div className="w-full h-full flex items-center justify-center">
-            <div className="aspect-square h-full w-auto max-w-full max-h-full border-4 border-primary shadow-[0_0_0_2000px_rgba(0,0,0,0.6)] relative">
+        {/* The square frame: responsive logic */}
+        <div className="relative flex items-center justify-center w-full h-full">
+            <div className="aspect-square w-[min(100vw,100vh)] h-[min(100vw,100vh)] max-w-full max-h-full border-4 border-primary shadow-[0_0_0_2000px_rgba(0,0,0,0.6)] relative box-border">
             {/* Corner accents - larger and more visible */}
             <div className="absolute top-0 left-0 w-12 h-12 border-t-8 border-l-8 border-primary"></div>
             <div className="absolute top-0 right-0 w-12 h-12 border-t-8 border-r-8 border-primary"></div>
