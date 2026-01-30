@@ -54,3 +54,57 @@ export const shareImage = async (imageUrl: string, title: string = '歷史換裝
     }
   }
 }
+
+// TODO: Replace with the actual school logo URL
+// If this URL is empty or invalid, the logo will not be added
+export const SCHOOL_LOGO_URL = ''
+
+const loadImage = (src: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(img)
+    img.onerror = (e) => reject(e)
+    img.src = src
+  })
+}
+
+export const addSchoolLogoToImage = async (imageUrl: string): Promise<string> => {
+  // Check if logo URL exists
+  if (!SCHOOL_LOGO_URL) return imageUrl
+  
+  try {
+    const [image, logo] = await Promise.all([
+      loadImage(imageUrl),
+      loadImage(SCHOOL_LOGO_URL)
+    ])
+    
+    const canvas = document.createElement('canvas')
+    canvas.width = image.width
+    canvas.height = image.height
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return imageUrl
+    
+    // Draw original image
+    ctx.drawImage(image, 0, 0)
+    
+    // Draw logo at bottom right
+    // Logo width = 15% of image width
+    const logoWidth = image.width * 0.15
+    const logoAspectRatio = logo.width / logo.height
+    const logoHeight = logoWidth / logoAspectRatio
+    
+    const padding = image.width * 0.05 // 5% padding
+    
+    const x = image.width - logoWidth - padding
+    const y = image.height - logoHeight - padding
+    
+    ctx.drawImage(logo, x, y, logoWidth, logoHeight)
+    
+    return canvas.toDataURL('image/jpeg', 0.95)
+  } catch (e) {
+    console.error('Failed to add school logo:', e)
+    // If failed (e.g. CORS or load error), return original image
+    return imageUrl
+  }
+}

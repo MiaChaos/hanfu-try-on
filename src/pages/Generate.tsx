@@ -5,6 +5,7 @@ import { useAppStore } from '../store'
 import { generateOneShot } from '../api'
 import { Loader2, AlertCircle } from 'lucide-react'
 import { getClothingDescription } from '../lib/clothing-descriptions'
+import { addSchoolLogoToImage } from '../lib/utils'
 
 const Generate: React.FC = () => {
   const { imageFile, selectedDynasty, selectedGender, selectedRole, selectedComposition, keepBackground, setResult, addToHistory, setError, error } = useAppStore()
@@ -35,11 +36,14 @@ const Generate: React.FC = () => {
 
         const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender, selectedRole, selectedComposition, keepBackground)
         
+        // Try to add school logo if configured
+        const finalImageUrl = await addSchoolLogoToImage(genRes.imageUrl)
+
         clearInterval(interval)
         setProgress(100)
         
         const newResult = {
-          imageUrl: genRes.imageUrl,
+          imageUrl: finalImageUrl,
           id: genRes.resultId,
           dynasty: selectedDynasty
         }
