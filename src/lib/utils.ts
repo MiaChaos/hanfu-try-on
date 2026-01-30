@@ -73,10 +73,18 @@ export const addSchoolLogoToImage = async (imageUrl: string): Promise<string> =>
   // Check if logo URL exists
   if (!SCHOOL_LOGO_URL) return imageUrl
   
+  // Use proxy for external URLs to avoid CORS issues in Canvas
+  const getProxiedUrl = (url: string) => {
+    if (url.startsWith('http')) {
+      return `/api/proxy-image?url=${encodeURIComponent(url)}`
+    }
+    return url
+  }
+  
   try {
     const [image, logo] = await Promise.all([
       loadImage(imageUrl),
-      loadImage(SCHOOL_LOGO_URL)
+      loadImage(getProxiedUrl(SCHOOL_LOGO_URL))
     ])
     
     const canvas = document.createElement('canvas')

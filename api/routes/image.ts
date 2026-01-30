@@ -63,4 +63,37 @@ router.post('/generate-one-shot', upload.single('image'), imageController.genera
 // GET /api/result/:filename
 router.get('/result/:filename', imageController.getResult)
 
+// GET /api/proxy-image
+router.get('/proxy-image', async (req, res) => {
+  const imageUrl = req.query.url as string
+  if (!imageUrl) {
+    res.status(400).send('Missing url parameter')
+    return
+  }
+
+  try {
+    const response = await fetch(imageUrl)
+    if (!response.ok) {
+      res.status(response.status).send(`Failed to fetch image: ${response.statusText}`)
+      return
+    }
+
+    const contentType = response.headers.get('content-type')
+    if (contentType) {
+      res.setHeader('Content-Type', contentType)
+    }
+    
+    // Set CORS headers to allow everything
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Cache-Control', 'public, max-age=86400') // Cache for 1 day
+
+    const arrayBuffer = await response.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    res.send(buffer)
+  } catch (error) {
+    console.error('Proxy error:', error)
+    res.status(500).send('Internal Server Error')
+  }
+})
+
 export default router
