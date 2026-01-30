@@ -1,10 +1,10 @@
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
 import { EventHeader } from '../components/EventHeader'
 import { useAppStore, type Gender, type Dynasty, type Role } from '../store'
-import { RotateCcw, Sparkles, User, UserCheck, Landmark, BookOpen, Image as ImageIcon, ImageOff, Crown } from 'lucide-react'
+import { RotateCcw, Sparkles, User, Landmark, Image as ImageIcon, ImageOff, Crown, Menu, X } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const DYNASTIES: { id: Dynasty; name: string }[] = [
@@ -29,6 +29,7 @@ const Home: React.FC = () => {
     keepBackground, setKeepBackground
   } = useAppStore()
   const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(true)
 
   useEffect(() => {
     // Connection test
@@ -49,50 +50,65 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-[#0a0a0a] relative overflow-hidden">
-      {/* Header - Right Aligned */}
+      {/* Header - Right Aligned (Event Info) */}
       <EventHeader />
 
-      {/* Top Left Selection Panel */}
+      {/* Mobile Menu Toggle Button (Visible when menu is closed or on mobile) */}
       {!previewUrl && (
-        <div className="absolute top-6 left-6 z-50 flex flex-col gap-8 pointer-events-none">
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="absolute top-6 left-6 z-[60] p-3 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/10 shadow-xl hover:bg-primary transition-all active:scale-95"
+        >
+          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      )}
+
+      {/* Top Left Selection Panel (Collapsible) */}
+      {!previewUrl && (
+        <div 
+          className={clsx(
+            "absolute top-20 left-6 z-50 flex flex-col gap-6 transition-all duration-300 origin-top-left",
+            isMenuOpen ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-90 -translate-y-4 pointer-events-none"
+          )}
+        >
           {/* Gender Select */}
-          <div className="flex flex-col gap-3 pointer-events-auto">
+          <div className="flex flex-col gap-2">
             <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
               <User size={12} /> 性別
             </span>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               {(['female', 'male'] as Gender[]).map((g) => (
                 <button
                   key={g}
                   onClick={() => setGender(g)}
                   className={clsx(
-                    "px-5 py-2.5 rounded-xl text-xs font-black transition-all border-2 backdrop-blur-2xl",
+                    "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl",
                     selectedGender === g 
-                      ? "bg-primary text-white border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] scale-105" 
-                      : "bg-black/60 text-white/40 border-white/5 hover:border-white/20"
+                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
                   )}
                 >
-                  {g === 'female' ? '女性服飾' : '男性服飾'}
+                  {g === 'female' ? '女性' : '男性'}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Dynasty Select */}
-          <div className="flex flex-col gap-3 pointer-events-auto">
+          <div className="flex flex-col gap-2">
             <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
               <Landmark size={12} /> 朝代
             </span>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {DYNASTIES.map((d) => (
                 <button
                   key={d.id}
                   onClick={() => setDynasty(d.id)}
                   className={clsx(
-                    "px-5 py-2.5 rounded-xl text-xs font-black transition-all border-2 backdrop-blur-2xl text-center",
+                    "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl text-center",
                     selectedDynasty === d.id 
-                      ? "bg-primary text-white border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] scale-105" 
-                      : "bg-black/60 text-white/40 border-white/5 hover:border-white/20"
+                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
                   )}
                 >
                   {d.name}
@@ -102,20 +118,20 @@ const Home: React.FC = () => {
           </div>
 
           {/* Role Select */}
-          <div className="flex flex-col gap-3 pointer-events-auto">
+          <div className="flex flex-col gap-2">
             <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
               <Crown size={12} /> 身份
             </span>
-            <div className="flex gap-3">
+            <div className="flex gap-2 flex-wrap max-w-[200px]">
               {ROLES.map((r) => (
                 <button
                   key={r.id}
                   onClick={() => setRole(r.id)}
                   className={clsx(
-                    "px-4 py-2.5 rounded-xl text-xs font-black transition-all border-2 backdrop-blur-2xl",
+                    "px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl",
                     selectedRole === r.id 
-                      ? "bg-primary text-white border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] scale-105" 
-                      : "bg-black/60 text-white/40 border-white/5 hover:border-white/20"
+                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
                   )}
                 >
                   {r.name}
@@ -125,21 +141,21 @@ const Home: React.FC = () => {
           </div>
 
           {/* Background Toggle */}
-          <div className="flex flex-col gap-3 pointer-events-auto">
+          <div className="flex flex-col gap-2">
             <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
-              <ImageIcon size={12} /> 背景設定
+              <ImageIcon size={12} /> 背景
             </span>
             <button
               onClick={() => setKeepBackground(!keepBackground)}
               className={clsx(
-                "flex items-center gap-3 px-5 py-2.5 rounded-xl text-xs font-black transition-all border-2 backdrop-blur-2xl w-fit",
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl w-fit",
                 !keepBackground 
-                  ? "bg-primary/20 text-primary border-primary/40 shadow-lg" 
-                  : "bg-yellow-500/20 text-yellow-500 border-yellow-500/40 shadow-lg"
+                  ? "bg-primary/20 text-primary border-primary/40" 
+                  : "bg-yellow-500/20 text-yellow-500 border-yellow-500/40"
               )}
             >
-              {!keepBackground ? <ImageIcon size={16} /> : <ImageOff size={16} />}
-              {!keepBackground ? '更換歷史背景' : '保留拍攝背景'}
+              {!keepBackground ? <ImageIcon size={14} /> : <ImageOff size={14} />}
+              {!keepBackground ? '更換背景' : '保留背景'}
             </button>
           </div>
         </div>
