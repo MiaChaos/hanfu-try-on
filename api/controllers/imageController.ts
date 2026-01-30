@@ -27,7 +27,7 @@ export const uploadImage = async (req: Request, res: Response) => {
 }
 
 export const generateImage = async (req: Request, res: Response) => {
-  const { imageId, dynasty, gender, keepBackground } = req.body
+  const { imageId, dynasty, gender, role, keepBackground } = req.body
   
   if (!imageId || !dynasty) {
     return res.status(400).json({ success: false, message: 'Missing imageId or dynasty' })
@@ -36,6 +36,7 @@ export const generateImage = async (req: Request, res: Response) => {
   try {
     const safeDynasty = sanitize(dynasty)
     const safeGender = sanitize(gender || 'female')
+    const safeRole = sanitize(role || 'commoner')
     const safeKeepBackground = keepBackground === true || keepBackground === 'true'
     const safeImageId = sanitize(imageId.split('.')[0]) + path.extname(imageId)
     
@@ -55,6 +56,7 @@ export const generateImage = async (req: Request, res: Response) => {
       imagePath,
       dynasty: safeDynasty,
       gender: safeGender,
+      role: safeRole,
       keepBackground: safeKeepBackground,
       apiKey
     })
@@ -106,6 +108,7 @@ export const generateOneShot = async (req: Request, res: Response) => {
 
     const dynasty = sanitize(req.body.dynasty || 'tang')
     const gender = sanitize(req.body.gender || 'female')
+    const role = sanitize(req.body.role || 'commoner')
     const keepBackground = req.body.keepBackground === 'true'
     
     const imagePath = req.file.path
@@ -120,6 +123,7 @@ export const generateOneShot = async (req: Request, res: Response) => {
       imagePath,
       dynasty,
       gender,
+      role,
       keepBackground,
       apiKey
     })

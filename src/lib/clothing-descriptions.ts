@@ -1,9 +1,8 @@
+// This file is shared between frontend and backend to keep prompts consistent.
+// In a real monorepo, this would be in a shared package.
+// For now, we duplicate the data structure for frontend display.
 
-import fs from 'fs'
-
-const API_URL = 'https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation'
-
-const DYNASTY_PROMPTS: Record<string, Record<string, { male: string; female: string }>> = {
+export const CLOTHING_DESCRIPTIONS: Record<string, Record<string, { male: string; female: string }>> = {
   tang: {
     commoner: {
       female: '唐代女性平民服飾：身穿經典齊胸襦裙，短上衣紮進長裙內，色彩以石榴紅或間色為主，肩披輕薄披帛。髮髻簡約，點綴少量花朵。整體展現盛唐女性的自信與豐腴之美。',
@@ -62,87 +61,8 @@ const DYNASTY_PROMPTS: Record<string, Record<string, { male: string; female: str
   }
 }
 
-interface GenerateOptions {
-  imagePath: string
-  dynasty: string
-  gender: string
-  role?: string // Added role
-  keepBackground: boolean
-  apiKey: string
-}
-
-export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role = 'commoner', keepBackground, apiKey }: GenerateOptions) => {
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => {
-    console.warn(`[QWEN-EDIT] Request timed out for ${imagePath}`)
-    controller.abort()
-  }, 60000)
-
-  try {
-    console.log(`[QWEN-EDIT] Preparing request for ${imagePath}, dynasty: ${dynasty}, gender: ${gender}, role: ${role}, keepBackground: ${keepBackground}`)
-    
-    if (!fs.existsSync(imagePath)) {
-      throw new Error(`Image file not found at ${imagePath}`)
-    }
-
-    const imageBuffer = await fs.promises.readFile(imagePath)
-    const base64Image = imageBuffer.toString('base64')
-
-    const dynastyData = DYNASTY_PROMPTS[dynasty] || DYNASTY_PROMPTS.tang
-    const roleData = dynastyData[role as keyof typeof dynastyData] || dynastyData.commoner
-    const clothingDescription = gender === 'male' ? roleData.male : roleData.female
-
-    const backgroundInstruction = keepBackground 
-      ? '4. 【環境保留】：必須完整保留原圖中的背景環境、光影氛圍和所有背景細節，不得進行任何修改。'
-      : `4. 【環境融合】：將背景調整為適配該朝代風格的【寫實古風場景】（如古建築、中式園林、宮廷內部等）。人物與背景的光影、色調必須融合自然，如同在實景中拍攝。`
-
-    const prompt = `請對這張圖片進行「大師級」人像換裝編輯：
-    1. 【核心禁令 - 絕對保護面部】：嚴禁以任何形式修改照片中人物的面部特徵！必須完整保留原圖中的眼睛形狀、瞳孔、鼻子輪廓、嘴部特徵、臉型曲線、五官比例、表情神態以及所有身份特徵。人物的面部必須與原圖100%完全一致，如同照片本身。
-    2. 【服飾更換】：僅將人物穿著的現代服裝更換為【${dynasty}朝代】的【${gender === 'male' ? '男裝' : '女裝'}】。身份設定為【${role === 'emperor' ? '皇室成員' : role === 'official' ? '官員/貴族' : '平民'}】。具體要求：${clothingDescription}
-    3. 【藝術細節】：服飾面料應具有真實的絲綢或棉麻質感，刺繡紋樣需清晰細膩，符合歷史實物特徵。
-    ${backgroundInstruction}
-    5. 【規格要求】：輸出 512x512 的超高清正方形圖像，構圖比例保持人像居中。`
-
-    console.log(`[QWEN-EDIT] Sending request to DashScope (qwen-image-edit-max)...`)
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model: 'qwen-image-edit-max',
-        input: {
-          messages: [
-            {
-              role: 'user',
-              content: [
-                { image: `data:image/jpeg;base64,${base64Image}` },
-                { text: prompt }
-              ]
-            }
-          ]
-        },
-        parameters: {
-          result_format: 'message'
-        }
-      })
-    })
-
-    clearTimeout(timeoutId)
-    const data: any = await response.json()
-    
-    if (!response.ok) {
-      console.error(`[QWEN-EDIT] API Error:`, JSON.stringify(data))
-      throw new Error(data.message || data.error?.message || `API error ${response.status}`)
-    }
-
-    console.log(`[QWEN-EDIT] Request successful`)
-    return data
-  } catch (error: any) {
-    clearTimeout(timeoutId)
-    console.error('[QWEN-EDIT] Service Error:', error.stack || error.message)
-    throw error
-  }
+export const getClothingDescription = (dynasty: string, gender: string, role: string) => {
+  const dynastyData = CLOTHING_DESCRIPTIONS[dynasty] || CLOTHING_DESCRIPTIONS.tang
+  const roleData = dynastyData[role] || dynastyData.commoner
+  return gender === 'male' ? roleData.male : roleData.female
 }

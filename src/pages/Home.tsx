@@ -3,8 +3,8 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
 import { EventHeader } from '../components/EventHeader'
-import { useAppStore, type Gender, type Dynasty } from '../store'
-import { RotateCcw, Sparkles, User, UserCheck, Landmark, BookOpen, Image as ImageIcon, ImageOff } from 'lucide-react'
+import { useAppStore, type Gender, type Dynasty, type Role } from '../store'
+import { RotateCcw, Sparkles, User, UserCheck, Landmark, BookOpen, Image as ImageIcon, ImageOff, Crown } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const DYNASTIES: { id: Dynasty; name: string }[] = [
@@ -14,11 +14,18 @@ const DYNASTIES: { id: Dynasty; name: string }[] = [
   { id: 'qing', name: '大清' },
 ]
 
+const ROLES: { id: Role; name: string }[] = [
+  { id: 'commoner', name: '平民' },
+  { id: 'official', name: '官員' },
+  { id: 'emperor', name: '皇室' },
+]
+
 const Home: React.FC = () => {
   const { 
     previewUrl, setPreviewUrl, setImage, 
     selectedDynasty, setDynasty, 
     selectedGender, setGender,
+    selectedRole, setRole,
     keepBackground, setKeepBackground
   } = useAppStore()
   const navigate = useNavigate()
@@ -89,6 +96,29 @@ const Home: React.FC = () => {
                   )}
                 >
                   {d.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Role Select */}
+          <div className="flex flex-col gap-3 pointer-events-auto">
+            <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+              <Crown size={12} /> 身份
+            </span>
+            <div className="flex gap-3">
+              {ROLES.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => setRole(r.id)}
+                  className={clsx(
+                    "px-4 py-2.5 rounded-xl text-xs font-black transition-all border-2 backdrop-blur-2xl",
+                    selectedRole === r.id 
+                      ? "bg-primary text-white border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] scale-105" 
+                      : "bg-black/60 text-white/40 border-white/5 hover:border-white/20"
+                  )}
+                >
+                  {r.name}
                 </button>
               ))}
             </div>

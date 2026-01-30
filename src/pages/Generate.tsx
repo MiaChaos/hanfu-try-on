@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
 import { generateOneShot } from '../api'
 import { Loader2, AlertCircle } from 'lucide-react'
+import { getClothingDescription } from '../lib/clothing-descriptions'
 
 const Generate: React.FC = () => {
-  const { imageFile, selectedDynasty, selectedGender, keepBackground, setResult, addToHistory, setError, error } = useAppStore()
+  const { imageFile, selectedDynasty, selectedGender, selectedRole, keepBackground, setResult, addToHistory, setError, error } = useAppStore()
   const navigate = useNavigate()
   const [progress, setProgress] = useState(0)
 
@@ -32,7 +33,7 @@ const Generate: React.FC = () => {
           })
         }, 800)
 
-        const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender, keepBackground)
+        const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender, selectedRole, keepBackground)
         
         clearInterval(interval)
         setProgress(100)
@@ -93,9 +94,15 @@ const Generate: React.FC = () => {
           <h2 className="text-3xl font-serif font-bold text-primary mb-4">
             正在穿越時空...
           </h2>
-          <p className="text-gray-500 mb-8">
+          <p className="text-gray-500 mb-4">
             正在為您定製{selectedDynasty === 'tang' ? '大唐' : selectedDynasty === 'song' ? '大宋' : selectedDynasty === 'ming' ? '大明' : '大清'}服飾
           </p>
+          
+          <div className="bg-white/5 p-4 rounded-xl border border-white/10 mb-8 max-w-sm mx-auto">
+            <p className="text-sm text-gray-400 font-serif leading-relaxed text-justify">
+              {getClothingDescription(selectedDynasty, selectedGender, selectedRole)}
+            </p>
+          </div>
 
           <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
             <div 

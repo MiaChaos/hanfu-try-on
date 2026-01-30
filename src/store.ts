@@ -4,12 +4,14 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 
 export type Dynasty = 'tang' | 'song' | 'ming' | 'qing'
 export type Gender = 'male' | 'female'
+export type Role = 'commoner' | 'official' | 'emperor'
 
 interface AppState {
   imageFile: File | null
   previewUrl: string | null
   selectedDynasty: Dynasty
   selectedGender: Gender
+  selectedRole: Role
   keepBackground: boolean
   result: {
     imageUrl: string
@@ -29,6 +31,7 @@ interface AppState {
   setPreviewUrl: (url: string | null) => void
   setDynasty: (dynasty: Dynasty) => void
   setGender: (gender: Gender) => void
+  setRole: (role: Role) => void
   setKeepBackground: (keep: boolean) => void
   setResult: (result: AppState['result']) => void
   addToHistory: (item: AppState['history'][0]) => void
@@ -44,6 +47,7 @@ export const useAppStore = create<AppState>()(
       previewUrl: null,
       selectedDynasty: 'tang',
       selectedGender: 'female',
+      selectedRole: 'commoner',
       keepBackground: false,
       result: null,
       history: [],
@@ -54,6 +58,7 @@ export const useAppStore = create<AppState>()(
       setPreviewUrl: (url) => set({ previewUrl: url }),
       setDynasty: (dynasty) => set({ selectedDynasty: dynasty }),
       setGender: (gender) => set({ selectedGender: gender }),
+      setRole: (role) => set({ selectedRole: role }),
       setKeepBackground: (keep) => set({ keepBackground: keep }),
       setResult: (result) => set({ result }),
       addToHistory: (item) => set((state) => ({ 
@@ -77,6 +82,7 @@ export const useAppStore = create<AppState>()(
         history: state.history,
         selectedDynasty: state.selectedDynasty,
         selectedGender: state.selectedGender,
+        selectedRole: state.selectedRole,
         keepBackground: state.keepBackground
       })
     }
