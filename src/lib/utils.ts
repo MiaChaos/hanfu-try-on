@@ -57,7 +57,7 @@ export const shareImage = async (imageUrl: string, title: string = '歷史換裝
 
 // TODO: Replace with the actual school logo URL
 // If this URL is empty or invalid, the logo will not be added
-export const SCHOOL_LOGO_URL = ''
+export const SCHOOL_LOGO_URL = import.meta.env.VITE_SCHOOL_LOGO_URL || ''
 
 const loadImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
