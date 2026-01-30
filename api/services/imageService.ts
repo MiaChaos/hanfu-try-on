@@ -46,6 +46,7 @@ export class ImageService {
     dynasty: string
     gender: string
     role?: string
+    composition?: string
     keepBackground: boolean
     apiKey: string
   }): Promise<{ imageUrl: string | null; apiResult: any }> {

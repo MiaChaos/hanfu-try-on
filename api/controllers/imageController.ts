@@ -124,6 +124,7 @@ export const generateOneShot = async (req: Request, res: Response) => {
       dynasty,
       gender,
       role,
+      composition,
       keepBackground,
       apiKey
     })

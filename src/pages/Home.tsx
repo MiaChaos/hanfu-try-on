@@ -4,8 +4,15 @@ import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
 import { EventHeader } from '../components/EventHeader'
 import { useAppStore, type Gender, type Dynasty, type Role } from '../store'
-import { RotateCcw, Sparkles, User, Landmark, Image as ImageIcon, ImageOff, Crown, Menu, X } from 'lucide-react'
+import { RotateCcw, Sparkles, User, Landmark, Image as ImageIcon, ImageOff, Crown, Menu, X, ScanFace, Users, PersonStanding } from 'lucide-react'
 import { clsx } from 'clsx'
+
+const COMPOSITIONS: { id: Composition; name: string; icon: React.FC<any> }[] = [
+  { id: 'selfie', name: '自拍', icon: ScanFace },
+  { id: 'upper_body', name: '半身', icon: User },
+  { id: 'full_body', name: '全身', icon: PersonStanding },
+  { id: 'group', name: '多人', icon: Users },
+]
 
 const DYNASTIES: { id: Dynasty; name: string }[] = [
   { id: 'tang', name: '大唐' },
@@ -135,6 +142,30 @@ const Home: React.FC = () => {
                   )}
                 >
                   {r.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Composition Select */}
+          <div className="flex flex-col gap-2">
+            <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+              <ScanFace size={12} /> 構圖
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              {COMPOSITIONS.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setComposition(c.id)}
+                  className={clsx(
+                    "flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl",
+                    selectedComposition === c.id 
+                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
+                  )}
+                >
+                  <c.icon size={14} />
+                  {c.name}
                 </button>
               ))}
             </div>

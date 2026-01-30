@@ -33,7 +33,7 @@ const Generate: React.FC = () => {
           })
         }, 800)
 
-        const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender, selectedRole, keepBackground)
+        const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender, selectedRole, selectedComposition, keepBackground)
         
         clearInterval(interval)
         setProgress(100)

@@ -17,11 +17,12 @@ export const uploadImage = async (file: File, dynasty: string) => {
   return response.json()
 }
 
-export const generateOneShot = async (file: File, dynasty: string, gender: string, role: string, keepBackground: boolean) => {
+export const generateOneShot = async (file: File, dynasty: string, gender: string, role: string, composition: string, keepBackground: boolean) => {
   const formData = new FormData()
   formData.append('dynasty', dynasty)
   formData.append('gender', gender)
   formData.append('role', role)
+  formData.append('composition', composition)
   formData.append('keepBackground', String(keepBackground))
   formData.append('image', file)
   

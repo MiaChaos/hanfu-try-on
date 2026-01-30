@@ -5,6 +5,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 export type Dynasty = 'tang' | 'song' | 'ming' | 'qing'
 export type Gender = 'male' | 'female'
 export type Role = 'commoner' | 'official' | 'emperor'
+export type Composition = 'selfie' | 'upper_body' | 'full_body' | 'group'
 
 interface AppState {
   imageFile: File | null
@@ -12,6 +13,7 @@ interface AppState {
   selectedDynasty: Dynasty
   selectedGender: Gender
   selectedRole: Role
+  selectedComposition: Composition
   keepBackground: boolean
   result: {
     imageUrl: string
@@ -32,6 +34,7 @@ interface AppState {
   setDynasty: (dynasty: Dynasty) => void
   setGender: (gender: Gender) => void
   setRole: (role: Role) => void
+  setComposition: (composition: Composition) => void
   setKeepBackground: (keep: boolean) => void
   setResult: (result: AppState['result']) => void
   addToHistory: (item: AppState['history'][0]) => void
@@ -59,6 +62,7 @@ export const useAppStore = create<AppState>()(
       setDynasty: (dynasty) => set({ selectedDynasty: dynasty }),
       setGender: (gender) => set({ selectedGender: gender }),
       setRole: (role) => set({ selectedRole: role }),
+      setComposition: (composition) => set({ selectedComposition: composition }),
       setKeepBackground: (keep) => set({ keepBackground: keep }),
       setResult: (result) => set({ result }),
       addToHistory: (item) => set((state) => ({ 

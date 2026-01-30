@@ -79,7 +79,7 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
   }, 60000)
 
   try {
-    console.log(`[QWEN-EDIT] Preparing request for ${imagePath}, dynasty: ${dynasty}, gender: ${gender}, role: ${role}, keepBackground: ${keepBackground}`)
+    console.log(`[QWEN-EDIT] Preparing request for ${imagePath}, dynasty: ${dynasty}, gender: ${gender}, role: ${role}, composition: ${composition}, keepBackground: ${keepBackground}`)
     
     if (!fs.existsSync(imagePath)) {
       throw new Error(`Image file not found at ${imagePath}`)
@@ -91,6 +91,7 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
     const dynastyData = DYNASTY_PROMPTS[dynasty] || DYNASTY_PROMPTS.tang
     const roleData = dynastyData[role as keyof typeof dynastyData] || dynastyData.commoner
     const clothingDescription = gender === 'male' ? roleData.male : roleData.female
+    const compositionPrompt = COMPOSITION_PROMPTS[composition] || COMPOSITION_PROMPTS.upper_body
 
     const backgroundInstruction = keepBackground 
       ? '4. 【環境保留】：必須完整保留原圖中的背景環境、光影氛圍和所有背景細節，不得進行任何修改。'
@@ -99,6 +100,7 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
     const prompt = `請對這張圖片進行「大師級」人像換裝編輯：
     1. 【核心禁令 - 絕對保護面部】：嚴禁以任何形式修改照片中人物的面部特徵！必須完整保留原圖中的眼睛形狀、瞳孔、鼻子輪廓、嘴部特徵、臉型曲線、五官比例、表情神態以及所有身份特徵。人物的面部必須與原圖100%完全一致，如同照片本身。
     2. 【構圖與範圍】：
+       - ${compositionPrompt}
        - 嚴格保持原圖的構圖比例和人物姿勢，不得裁剪或縮放。
        - 對於超出圖片畫面範圍的服飾部分（如長裙下擺、寬大袖口），如果原圖構圖未包含，則無需繪製，自然截斷即可。
        - 重點處理畫面內可見的服飾區域，確保與身體動態完美貼合。
