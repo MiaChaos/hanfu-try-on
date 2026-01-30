@@ -51,6 +51,7 @@ export const useAppStore = create<AppState>()(
       selectedDynasty: 'tang',
       selectedGender: 'female',
       selectedRole: 'commoner',
+      selectedComposition: 'upper_body',
       keepBackground: false,
       result: null,
       history: [],
@@ -87,6 +88,7 @@ export const useAppStore = create<AppState>()(
         selectedDynasty: state.selectedDynasty,
         selectedGender: state.selectedGender,
         selectedRole: state.selectedRole,
+        selectedComposition: state.selectedComposition,
         keepBackground: state.keepBackground
       })
     }

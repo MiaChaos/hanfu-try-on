@@ -7,7 +7,7 @@ import { Loader2, AlertCircle } from 'lucide-react'
 import { getClothingDescription } from '../lib/clothing-descriptions'
 
 const Generate: React.FC = () => {
-  const { imageFile, selectedDynasty, selectedGender, selectedRole, keepBackground, setResult, addToHistory, setError, error } = useAppStore()
+  const { imageFile, selectedDynasty, selectedGender, selectedRole, selectedComposition, keepBackground, setResult, addToHistory, setError, error } = useAppStore()
   const navigate = useNavigate()
   const [progress, setProgress] = useState(0)
 

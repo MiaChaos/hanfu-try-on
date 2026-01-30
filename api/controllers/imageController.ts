@@ -109,6 +109,7 @@ export const generateOneShot = async (req: Request, res: Response) => {
     const dynasty = sanitize(req.body.dynasty || 'tang')
     const gender = sanitize(req.body.gender || 'female')
     const role = sanitize(req.body.role || 'commoner')
+    const composition = sanitize(req.body.composition || 'upper_body')
     const keepBackground = req.body.keepBackground === 'true'
     
     const imagePath = req.file.path

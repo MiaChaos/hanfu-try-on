@@ -62,16 +62,24 @@ const DYNASTY_PROMPTS: Record<string, Record<string, { male: string; female: str
   }
 }
 
+const COMPOSITION_PROMPTS: Record<string, string> = {
+  selfie: '【構圖模式：自拍/大頭照】重點刻畫人物面部特徵與神態，背景適當虛化。保留面部特寫的親密感。',
+  upper_body: '【構圖模式：半身照】重點展示人物上半身的服飾細節（領口、袖口、配飾）。構圖穩定，展現人物氣質。',
+  full_body: '【構圖模式：全身照】人物完整出現在畫面中（頭頂到腳底），重點展示整體服飾搭配與身體姿態。',
+  group: '【構圖模式：多人合照】畫面中包含多個人物，需確保所有人物的服飾風格統一，且與朝代背景相符。',
+}
+
 interface GenerateOptions {
   imagePath: string
   dynasty: string
   gender: string
   role?: string // Added role
+  composition?: string // Added composition
   keepBackground: boolean
   apiKey: string
 }
 
-export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role = 'commoner', keepBackground, apiKey }: GenerateOptions) => {
+export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role = 'commoner', composition = 'upper_body', keepBackground, apiKey }: GenerateOptions) => {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => {
     console.warn(`[QWEN-EDIT] Request timed out for ${imagePath}`)
@@ -93,7 +101,7 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
     const clothingDescription = gender === 'male' ? roleData.male : roleData.female
     const compositionPrompt = COMPOSITION_PROMPTS[composition] || COMPOSITION_PROMPTS.upper_body
 
-    const backgroundInstruction = keepBackground 
+    const backgroundInstruction = keepBackground
       ? '4. 【環境保留】：必須完整保留原圖中的背景環境、光影氛圍和所有背景細節，不得進行任何修改。'
       : `4. 【環境融合】：將背景調整為適配該朝代風格的【寫實古風場景】（如古建築、中式園林、宮廷內部等）。人物與背景的光影、色調必須融合自然，如同在實景中拍攝。`
 

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
 import { EventHeader } from '../components/EventHeader'
-import { useAppStore, type Gender, type Dynasty, type Role } from '../store'
+import { useAppStore, type Gender, type Dynasty, type Role, type Composition } from '../store'
 import { RotateCcw, Sparkles, User, Landmark, Image as ImageIcon, ImageOff, Crown, Menu, X, ScanFace, Users, PersonStanding } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -33,6 +33,7 @@ const Home: React.FC = () => {
     selectedDynasty, setDynasty, 
     selectedGender, setGender,
     selectedRole, setRole,
+    selectedComposition, setComposition,
     keepBackground, setKeepBackground
   } = useAppStore()
   const navigate = useNavigate()
