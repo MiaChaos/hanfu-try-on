@@ -7,7 +7,7 @@ import { clsx } from 'clsx'
 import { downloadImage, shareImage } from '../lib/utils'
 
 export const HistorySidebar: React.FC = () => {
-  const { history, setResult } = useAppStore()
+  const { history, setResult, removeFromHistory, clearHistory } = useAppStore()
   const [isOpen, setIsOpen] = useState(false)
   const navigate = useNavigate()
 
@@ -71,12 +71,27 @@ export const HistorySidebar: React.FC = () => {
             <h2 className="text-lg font-serif font-bold text-white flex items-center gap-2">
               <Clock size={20} className="text-primary" /> 本次生成記錄
             </h2>
-            <button 
-              onClick={() => setIsOpen(false)}
-              className="p-2 rounded-full hover:bg-white/10 text-white/40 transition-colors"
-            >
-              <X size={20} />
-            </button>
+            <div className="flex gap-2">
+              {history.length > 0 && (
+                <button 
+                  onClick={() => {
+                    if (window.confirm('確定要清空所有歷史記錄嗎？')) {
+                      clearHistory()
+                    }
+                  }}
+                  className="p-2 rounded-full hover:bg-white/10 text-white/40 hover:text-red-500 transition-colors"
+                  title="清空歷史記錄"
+                >
+                  <Trash2 size={20} />
+                </button>
+              )}
+              <button 
+                onClick={() => setIsOpen(false)}
+                className="p-2 rounded-full hover:bg-white/10 text-white/40 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -95,6 +110,20 @@ export const HistorySidebar: React.FC = () => {
                     <span className="text-white text-[10px] font-black uppercase tracking-widest">
                       查看大圖
                     </span>
+                  </div>
+                  <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (window.confirm('確定要刪除這張圖片嗎？')) {
+                          removeFromHistory(item.timestamp)
+                        }
+                      }}
+                      className="p-1.5 rounded-full bg-black/60 text-white/60 hover:text-red-500 hover:bg-black/80 transition-all"
+                      title="刪除"
+                    >
+                      <Trash size={12} />
+                    </button>
                   </div>
                   <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-primary/80 backdrop-blur-md text-[10px] font-black text-white">
                     {item.dynasty === 'tang' && '大唐'}
