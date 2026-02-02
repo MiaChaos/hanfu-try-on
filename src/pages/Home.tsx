@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
 import { EventHeader } from '../components/EventHeader'
 import { useAppStore, type Gender, type Dynasty, type Role, type Composition } from '../store'
-import { RotateCcw, Sparkles, User, Landmark, Image as ImageIcon, ImageOff, Crown, Menu, X, ScanFace, Users, PersonStanding, Palette } from 'lucide-react'
+import { RotateCcw, Sparkles, User, Landmark, Image as ImageIcon, ImageOff, Crown, Menu, X, ScanFace, Users, PersonStanding, Palette, ChevronRight } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const COMPOSITIONS: { id: Composition; name: string; icon: React.FC<any> }[] = [
@@ -51,6 +51,7 @@ const Home: React.FC = () => {
   } = useAppStore()
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(true)
+  const [isColorMenuOpen, setIsColorMenuOpen] = useState(false)
 
   useEffect(() => {
     // Connection test
@@ -88,9 +89,14 @@ const Home: React.FC = () => {
       {!previewUrl && (
         <div 
           className={clsx(
-            "absolute top-20 left-6 z-50 flex flex-col gap-6 transition-all duration-300 origin-top-left max-h-[80vh] overflow-y-auto scrollbar-hide pr-2 pb-10",
+            "absolute top-20 left-6 z-50 flex flex-col gap-6 transition-all duration-300 origin-top-left max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-none pr-4 pb-10 overscroll-contain",
             isMenuOpen ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-90 -translate-y-4 pointer-events-none"
           )}
+          style={{ 
+            scrollbarWidth: 'none', 
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch' // Enable momentum scrolling on iOS
+          }}
         >
           {/* Gender Select */}
           <div className="flex flex-col gap-2">
@@ -185,47 +191,78 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Color Scheme Select */}
-          <div className="flex flex-col gap-3">
-             <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+          {/* Color Scheme Select (Collapsible) */}
+          <div className="flex flex-col gap-2">
+            <button 
+              onClick={() => setIsColorMenuOpen(!isColorMenuOpen)}
+              className="flex items-center gap-2 text-white/50 text-[10px] font-black ml-1 uppercase tracking-[0.25em] w-fit hover:text-white transition-colors"
+            >
               <Palette size={12} /> 配色
-            </span>
+              <ChevronRight size={12} className={clsx("transition-transform duration-300", isColorMenuOpen && "rotate-90")} />
+            </button>
             
-            {/* Top Color */}
-            <div className="space-y-1">
-              <span className="text-[10px] text-white/40 ml-1">上裝</span>
-              <div className="flex gap-1.5 flex-wrap max-w-[200px]">
-                {COLORS.map((c) => (
-                  <button
-                    key={`top-${c.id}`}
-                    onClick={() => setColors({ top: c.id })}
-                    className={clsx(
-                      "w-6 h-6 rounded-full border transition-all relative group",
-                      c.border,
-                      selectedColors.top === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
-                    )}
-                    style={{ backgroundColor: c.hex }}
-                    title={c.name}
-                  >
-                     {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Bottom Color - Hide for upper_body/selfie */}
-            {selectedComposition !== 'upper_body' && selectedComposition !== 'selfie' && (
+            <div className={clsx(
+              "flex flex-col gap-3 transition-all duration-300 overflow-hidden pl-2 border-l border-white/5 ml-1",
+              isColorMenuOpen ? "max-h-[500px] opacity-100 mt-1 pb-1" : "max-h-0 opacity-0"
+            )}>
+              {/* Top Color */}
               <div className="space-y-1">
-                <span className="text-[10px] text-white/40 ml-1">下裝</span>
+                <span className="text-[10px] text-white/40 ml-1">上裝</span>
                 <div className="flex gap-1.5 flex-wrap max-w-[200px]">
                   {COLORS.map((c) => (
                     <button
-                      key={`bottom-${c.id}`}
-                      onClick={() => setColors({ bottom: c.id })}
+                      key={`top-${c.id}`}
+                      onClick={() => setColors({ top: c.id })}
                       className={clsx(
                         "w-6 h-6 rounded-full border transition-all relative group",
                         c.border,
-                        selectedColors.bottom === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                        selectedColors.top === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                      )}
+                      style={{ backgroundColor: c.hex }}
+                      title={c.name}
+                    >
+                       {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Color - Hide for upper_body/selfie */}
+              {selectedComposition !== 'upper_body' && selectedComposition !== 'selfie' && (
+                <div className="space-y-1">
+                  <span className="text-[10px] text-white/40 ml-1">下裝</span>
+                  <div className="flex gap-1.5 flex-wrap max-w-[200px]">
+                    {COLORS.map((c) => (
+                      <button
+                        key={`bottom-${c.id}`}
+                        onClick={() => setColors({ bottom: c.id })}
+                        className={clsx(
+                          "w-6 h-6 rounded-full border transition-all relative group",
+                          c.border,
+                          selectedColors.bottom === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                        )}
+                        style={{ backgroundColor: c.hex }}
+                        title={c.name}
+                      >
+                        {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Accessory Color */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-white/40 ml-1">配飾</span>
+                <div className="flex gap-1.5 flex-wrap max-w-[200px]">
+                  {COLORS.map((c) => (
+                    <button
+                      key={`acc-${c.id}`}
+                      onClick={() => setColors({ accessory: c.id })}
+                      className={clsx(
+                        "w-6 h-6 rounded-full border transition-all relative group",
+                        c.border,
+                        selectedColors.accessory === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
                       )}
                       style={{ backgroundColor: c.hex }}
                       title={c.name}
@@ -234,28 +271,6 @@ const Home: React.FC = () => {
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* Accessory Color */}
-            <div className="space-y-1">
-              <span className="text-[10px] text-white/40 ml-1">配飾</span>
-              <div className="flex gap-1.5 flex-wrap max-w-[200px]">
-                {COLORS.map((c) => (
-                  <button
-                    key={`acc-${c.id}`}
-                    onClick={() => setColors({ accessory: c.id })}
-                    className={clsx(
-                      "w-6 h-6 rounded-full border transition-all relative group",
-                      c.border,
-                      selectedColors.accessory === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
-                    )}
-                    style={{ backgroundColor: c.hex }}
-                    title={c.name}
-                  >
-                    {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
-                  </button>
-                ))}
               </div>
             </div>
           </div>
