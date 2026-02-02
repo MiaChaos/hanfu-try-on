@@ -47,6 +47,7 @@ export class ImageService {
     gender: string
     role?: string
     composition?: string
+    colors?: { top: string; bottom: string; accessory: string }
     keepBackground: boolean
     apiKey: string
   }): Promise<{ imageUrl: string | null; apiResult: any }> {

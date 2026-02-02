@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Camera } from '../components/Camera'
 import { EventHeader } from '../components/EventHeader'
 import { useAppStore, type Gender, type Dynasty, type Role, type Composition } from '../store'
-import { RotateCcw, Sparkles, User, Landmark, Image as ImageIcon, ImageOff, Crown, Menu, X, ScanFace, Users, PersonStanding } from 'lucide-react'
+import { RotateCcw, Sparkles, User, Landmark, Image as ImageIcon, ImageOff, Crown, Menu, X, ScanFace, Users, PersonStanding, Palette } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const COMPOSITIONS: { id: Composition; name: string; icon: React.FC<any> }[] = [
@@ -27,6 +27,18 @@ const ROLES: { id: Role; name: string }[] = [
   { id: 'emperor', name: '皇室' },
 ]
 
+const COLORS = [
+  { id: 'default', name: '默認', hex: 'transparent', border: 'border-white/20' },
+  { id: 'red', name: '朱紅', hex: '#E53E3E', border: 'border-red-500/50' },
+  { id: 'blue', name: '靛藍', hex: '#3182CE', border: 'border-blue-500/50' },
+  { id: 'green', name: '青綠', hex: '#38A169', border: 'border-green-500/50' },
+  { id: 'white', name: '月白', hex: '#F7FAFC', border: 'border-white/50' },
+  { id: 'black', name: '玄黑', hex: '#1A202C', border: 'border-gray-500/50' },
+  { id: 'gold', name: '金黃', hex: '#D69E2E', border: 'border-yellow-500/50' },
+  { id: 'purple', name: '紫棠', hex: '#805AD5', border: 'border-purple-500/50' },
+  { id: 'pink', name: '桃粉', hex: '#D53F8C', border: 'border-pink-500/50' },
+]
+
 const Home: React.FC = () => {
   const { 
     previewUrl, setPreviewUrl, setImage, 
@@ -34,6 +46,7 @@ const Home: React.FC = () => {
     selectedGender, setGender,
     selectedRole, setRole,
     selectedComposition, setComposition,
+    selectedColors, setColors,
     keepBackground, setKeepBackground
   } = useAppStore()
   const navigate = useNavigate()
@@ -75,7 +88,7 @@ const Home: React.FC = () => {
       {!previewUrl && (
         <div 
           className={clsx(
-            "absolute top-20 left-6 z-50 flex flex-col gap-6 transition-all duration-300 origin-top-left",
+            "absolute top-20 left-6 z-50 flex flex-col gap-6 transition-all duration-300 origin-top-left max-h-[80vh] overflow-y-auto scrollbar-hide pr-2 pb-10",
             isMenuOpen ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-90 -translate-y-4 pointer-events-none"
           )}
         >
@@ -169,6 +182,81 @@ const Home: React.FC = () => {
                   {c.name}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Color Scheme Select */}
+          <div className="flex flex-col gap-3">
+             <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+              <Palette size={12} /> 配色
+            </span>
+            
+            {/* Top Color */}
+            <div className="space-y-1">
+              <span className="text-[10px] text-white/40 ml-1">上裝</span>
+              <div className="flex gap-1.5 flex-wrap max-w-[200px]">
+                {COLORS.map((c) => (
+                  <button
+                    key={`top-${c.id}`}
+                    onClick={() => setColors({ top: c.id })}
+                    className={clsx(
+                      "w-6 h-6 rounded-full border transition-all relative group",
+                      c.border,
+                      selectedColors.top === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                    )}
+                    style={{ backgroundColor: c.hex }}
+                    title={c.name}
+                  >
+                     {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Color - Hide for upper_body/selfie */}
+            {selectedComposition !== 'upper_body' && selectedComposition !== 'selfie' && (
+              <div className="space-y-1">
+                <span className="text-[10px] text-white/40 ml-1">下裝</span>
+                <div className="flex gap-1.5 flex-wrap max-w-[200px]">
+                  {COLORS.map((c) => (
+                    <button
+                      key={`bottom-${c.id}`}
+                      onClick={() => setColors({ bottom: c.id })}
+                      className={clsx(
+                        "w-6 h-6 rounded-full border transition-all relative group",
+                        c.border,
+                        selectedColors.bottom === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                      )}
+                      style={{ backgroundColor: c.hex }}
+                      title={c.name}
+                    >
+                      {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Accessory Color */}
+            <div className="space-y-1">
+              <span className="text-[10px] text-white/40 ml-1">配飾</span>
+              <div className="flex gap-1.5 flex-wrap max-w-[200px]">
+                {COLORS.map((c) => (
+                  <button
+                    key={`acc-${c.id}`}
+                    onClick={() => setColors({ accessory: c.id })}
+                    className={clsx(
+                      "w-6 h-6 rounded-full border transition-all relative group",
+                      c.border,
+                      selectedColors.accessory === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                    )}
+                    style={{ backgroundColor: c.hex }}
+                    title={c.name}
+                  >
+                    {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

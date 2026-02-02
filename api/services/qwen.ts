@@ -147,11 +147,23 @@ interface GenerateOptions {
   gender: string
   role?: string // Added role
   composition?: string // Added composition
+  colors?: { top: string; bottom: string; accessory: string } // Added colors
   keepBackground: boolean
   apiKey: string
 }
 
-export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role = 'commoner', composition = 'upper_body', keepBackground, apiKey }: GenerateOptions) => {
+const COLOR_MAP: Record<string, string> = {
+  red: '朱紅',
+  blue: '靛藍',
+  green: '青綠',
+  white: '月白',
+  black: '玄黑',
+  gold: '金黃',
+  purple: '紫棠',
+  pink: '桃粉'
+}
+
+export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role = 'commoner', composition = 'upper_body', colors, keepBackground, apiKey }: GenerateOptions) => {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => {
     console.warn(`[QWEN-EDIT] Request timed out for ${imagePath}`)
@@ -187,6 +199,23 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
       ? '【多人物處理】：請對圖片中出現的所有主要人物進行換裝，確保風格統一。'
       : '【單人物聚焦】：僅將畫面中央的主要人物進行換裝，背景中的路人、其他人物或無關元素必須保持原樣，嚴禁修改。'
 
+    // Build color prompt
+    let colorPrompt = ''
+    if (colors) {
+      const parts = []
+      if (colors.top && colors.top !== 'default') parts.push(`上裝主色調為【${COLOR_MAP[colors.top] || colors.top}】`)
+      
+      // Constraint: Pants color prompt should NOT appear in "upper_body" or "selfie" composition modes
+      const showBottomColor = composition !== 'upper_body' && composition !== 'selfie'
+      if (showBottomColor && colors.bottom && colors.bottom !== 'default') parts.push(`下裝主色調為【${COLOR_MAP[colors.bottom] || colors.bottom}】`)
+      
+      if (colors.accessory && colors.accessory !== 'default') parts.push(`配飾點綴【${COLOR_MAP[colors.accessory] || colors.accessory}】`)
+      
+      if (parts.length > 0) {
+        colorPrompt = `5. 【配色要求】：${parts.join('，')}。請在符合朝代規制的前提下，自然融入這些色彩要求。`
+      }
+    }
+
     const prompt = `請對這張圖片進行「大師級」人像換裝編輯，嚴格遵守以下指令：
 
     1. 【最高優先級 - 面部像素級鎖定】：
@@ -210,6 +239,8 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
     4. 【材質與光影】：
        - 服飾材質需具備真實物理質感（絲綢的光澤、棉麻的紋理、刺繡的立體感）。
        - 光影渲染必須與原圖環境光線保持一致，確保換裝後的真實感，避免「貼圖感」。
+
+    ${colorPrompt}
 
     ${backgroundInstruction}
 

@@ -7,6 +7,12 @@ export type Gender = 'male' | 'female'
 export type Role = 'commoner' | 'official' | 'emperor'
 export type Composition = 'selfie' | 'upper_body' | 'full_body' | 'group'
 
+export interface ColorScheme {
+  top: string
+  bottom: string
+  accessory: string
+}
+
 interface AppState {
   imageFile: File | null
   previewUrl: string | null
@@ -14,6 +20,7 @@ interface AppState {
   selectedGender: Gender
   selectedRole: Role
   selectedComposition: Composition
+  selectedColors: ColorScheme
   keepBackground: boolean
   result: {
     imageUrl: string
@@ -35,6 +42,7 @@ interface AppState {
   setGender: (gender: Gender) => void
   setRole: (role: Role) => void
   setComposition: (composition: Composition) => void
+  setColors: (colors: Partial<ColorScheme>) => void
   setKeepBackground: (keep: boolean) => void
   setResult: (result: AppState['result']) => void
   addToHistory: (item: AppState['history'][0]) => void
@@ -54,6 +62,7 @@ export const useAppStore = create<AppState>()(
       selectedGender: 'female',
       selectedRole: 'commoner',
       selectedComposition: 'upper_body',
+      selectedColors: { top: 'default', bottom: 'default', accessory: 'default' },
       keepBackground: false,
       result: null,
       history: [],
@@ -66,6 +75,7 @@ export const useAppStore = create<AppState>()(
       setGender: (gender) => set({ selectedGender: gender }),
       setRole: (role) => set({ selectedRole: role }),
       setComposition: (composition) => set({ selectedComposition: composition }),
+      setColors: (colors) => set((state) => ({ selectedColors: { ...state.selectedColors, ...colors } })),
       setKeepBackground: (keep) => set({ keepBackground: keep }),
       setResult: (result) => set({ result }),
       addToHistory: (item) => set((state) => ({ 
@@ -95,6 +105,7 @@ export const useAppStore = create<AppState>()(
         selectedGender: state.selectedGender,
         selectedRole: state.selectedRole,
         selectedComposition: state.selectedComposition,
+        selectedColors: state.selectedColors,
         keepBackground: state.keepBackground
       })
     }

@@ -112,6 +112,15 @@ export const generateOneShot = async (req: Request, res: Response) => {
     const composition = sanitize(req.body.composition || 'upper_body')
     const keepBackground = req.body.keepBackground === 'true'
     
+    let colors = undefined
+    try {
+      if (req.body.colors) {
+        colors = JSON.parse(req.body.colors)
+      }
+    } catch (e) {
+      console.warn('[ONE-SHOT] Failed to parse colors:', e)
+    }
+    
     const imagePath = req.file.path
     const apiKey = process.env.QWEN_API_KEY
 
@@ -126,6 +135,7 @@ export const generateOneShot = async (req: Request, res: Response) => {
       gender,
       role,
       composition,
+      colors,
       keepBackground,
       apiKey
     })

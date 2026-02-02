@@ -8,7 +8,7 @@ import { getClothingDescription } from '../lib/clothing-descriptions'
 import { addSchoolLogoToImage } from '../lib/utils'
 
 const Generate: React.FC = () => {
-  const { imageFile, selectedDynasty, selectedGender, selectedRole, selectedComposition, keepBackground, setResult, addToHistory, setError, error } = useAppStore()
+  const { imageFile, selectedDynasty, selectedGender, selectedRole, selectedComposition, selectedColors, keepBackground, setResult, addToHistory, setError, error } = useAppStore()
   const navigate = useNavigate()
   const [progress, setProgress] = useState(0)
 
@@ -34,7 +34,7 @@ const Generate: React.FC = () => {
           })
         }, 800)
 
-        const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender, selectedRole, selectedComposition, keepBackground)
+        const genRes = await generateOneShot(imageFile, selectedDynasty, selectedGender, selectedRole, selectedComposition, selectedColors, keepBackground)
         
         // Try to add school logo if configured
         const finalImageUrl = await addSchoolLogoToImage(genRes.imageUrl)
