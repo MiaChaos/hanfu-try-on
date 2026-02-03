@@ -89,7 +89,7 @@ const Home: React.FC = () => {
       {!previewUrl && (
         <div 
           className={clsx(
-            "absolute top-20 left-6 z-50 flex flex-col gap-6 origin-top-left max-h-[calc(100dvh-120px)] overflow-y-auto scrollbar-none pr-4 pb-10 overscroll-contain touch-pan-y",
+            "absolute top-20 left-6 z-50 flex flex-col gap-6 origin-top-left max-h-[calc(100dvh-120px)] w-48 overflow-y-auto scrollbar-none pr-2 pb-24 overscroll-contain touch-pan-y",
             isMenuOpen ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-90 -translate-y-4 pointer-events-none"
           )}
           style={{ 
@@ -110,7 +110,7 @@ const Home: React.FC = () => {
                   key={g}
                   onClick={() => setGender(g)}
                   className={clsx(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl",
+                    "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
                     selectedGender === g 
                       ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
                       : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
@@ -133,7 +133,7 @@ const Home: React.FC = () => {
                   key={d.id}
                   onClick={() => setDynasty(d.id)}
                   className={clsx(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl text-center",
+                    "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl text-center touch-pan-y",
                     selectedDynasty === d.id 
                       ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
                       : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
@@ -156,7 +156,7 @@ const Home: React.FC = () => {
                   key={r.id}
                   onClick={() => setRole(r.id)}
                   className={clsx(
-                    "px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl",
+                    "px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
                     selectedRole === r.id 
                       ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
                       : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
@@ -179,7 +179,7 @@ const Home: React.FC = () => {
                   key={c.id}
                   onClick={() => setComposition(c.id)}
                   className={clsx(
-                    "flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl",
+                    "flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
                     selectedComposition === c.id 
                       ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
                       : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
@@ -196,7 +196,10 @@ const Home: React.FC = () => {
           <div className="flex flex-col gap-2">
             <button 
               onClick={() => setIsColorMenuOpen(!isColorMenuOpen)}
-              className="flex items-center gap-2 text-white/50 text-[10px] font-black ml-1 uppercase tracking-[0.25em] w-fit hover:text-white transition-colors"
+              className={clsx(
+                "flex items-center gap-2 text-white/50 text-[10px] font-black ml-1 uppercase tracking-[0.25em] w-fit hover:text-white transition-colors touch-pan-y",
+                isColorMenuOpen && "text-white"
+              )}
             >
               <Palette size={12} /> 配色
               <ChevronRight size={12} className={clsx("transition-transform duration-300", isColorMenuOpen && "rotate-90")} />
@@ -215,7 +218,7 @@ const Home: React.FC = () => {
                       key={`top-${c.id}`}
                       onClick={() => setColors({ top: c.id })}
                       className={clsx(
-                        "w-6 h-6 rounded-full border transition-all relative group",
+                        "w-6 h-6 rounded-full border transition-all relative group touch-pan-y",
                         c.border,
                         selectedColors.top === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
                       )}
@@ -238,7 +241,7 @@ const Home: React.FC = () => {
                         key={`bottom-${c.id}`}
                         onClick={() => setColors({ bottom: c.id })}
                         className={clsx(
-                          "w-6 h-6 rounded-full border transition-all relative group",
+                          "w-6 h-6 rounded-full border transition-all relative group touch-pan-y",
                           c.border,
                           selectedColors.bottom === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
                         )}
@@ -261,7 +264,7 @@ const Home: React.FC = () => {
                       key={`acc-${c.id}`}
                       onClick={() => setColors({ accessory: c.id })}
                       className={clsx(
-                        "w-6 h-6 rounded-full border transition-all relative group",
+                        "w-6 h-6 rounded-full border transition-all relative group touch-pan-y",
                         c.border,
                         selectedColors.accessory === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
                       )}
@@ -284,7 +287,7 @@ const Home: React.FC = () => {
             <button
               onClick={() => setKeepBackground(!keepBackground)}
               className={clsx(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl w-fit",
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl w-fit touch-pan-y",
                 !keepBackground 
                   ? "bg-primary/20 text-primary border-primary/40" 
                   : "bg-yellow-500/20 text-yellow-500 border-yellow-500/40"
