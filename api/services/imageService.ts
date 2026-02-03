@@ -63,6 +63,36 @@ export class ImageService {
 
     return { imageUrl, apiResult }
   }
+
+  /**
+   * Cleanup files older than specified age (in milliseconds)
+   */
+  async cleanupOldFiles(dir: string, maxAgeMs: number = 24 * 60 * 60 * 1000): Promise<void> {
+    try {
+      const files = await fs.readdir(dir)
+      const now = Date.now()
+
+      for (const file of files) {
+        const filePath = path.join(dir, file)
+        try {
+          const stats = await fs.stat(filePath)
+          if (stats.isDirectory()) {
+            await this.cleanupOldFiles(filePath, maxAgeMs) // Recursive
+          } else {
+            if (now - stats.mtimeMs > maxAgeMs) {
+              await fs.unlink(filePath)
+              console.log(`[CLEANUP] Deleted old file: ${filePath}`)
+            }
+          }
+        } catch (err) {
+          console.warn(`[CLEANUP] Failed to process file ${filePath}:`, err)
+        }
+      }
+    } catch (err) {
+      // Directory might not exist or other error, just ignore
+      // console.warn(`[CLEANUP] Error reading directory ${dir}:`, err)
+    }
+  }
 }
 
 export const imageService = new ImageService()

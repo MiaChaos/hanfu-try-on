@@ -72,6 +72,14 @@ router.get('/proxy-image', async (req, res) => {
   }
 
   try {
+    const allowedDomains = ['.aliyuncs.com', 'localhost', '127.0.0.1']
+    const urlObj = new URL(imageUrl)
+    const isAllowed = allowedDomains.some(domain => urlObj.hostname.endsWith(domain)) || urlObj.hostname === 'localhost'
+    
+    if (!isAllowed) {
+      return res.status(403).send('Forbidden: Domain not allowed')
+    }
+
     const response = await fetch(imageUrl)
     if (!response.ok) {
       res.status(response.status).send(`Failed to fetch image: ${response.statusText}`)
