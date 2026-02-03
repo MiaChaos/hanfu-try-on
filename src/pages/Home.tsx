@@ -89,13 +89,14 @@ const Home: React.FC = () => {
       {!previewUrl && (
         <div 
           className={clsx(
-            "absolute top-20 left-6 z-50 flex flex-col gap-6 transition-all duration-300 origin-top-left max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-none pr-4 pb-10 overscroll-contain",
+            "absolute top-20 left-6 z-50 flex flex-col gap-6 origin-top-left max-h-[calc(100dvh-120px)] overflow-y-auto scrollbar-none pr-4 pb-10 overscroll-contain touch-pan-y",
             isMenuOpen ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-90 -translate-y-4 pointer-events-none"
           )}
           style={{ 
             scrollbarWidth: 'none', 
             msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch' // Enable momentum scrolling on iOS
+            WebkitOverflowScrolling: 'touch', // Enable momentum scrolling on iOS
+            transition: 'opacity 300ms ease, transform 300ms ease' // Avoid animating layout properties
           }}
         >
           {/* Gender Select */}
