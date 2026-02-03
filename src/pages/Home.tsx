@@ -89,7 +89,7 @@ const Home: React.FC = () => {
       {!previewUrl && (
         <div 
           className={clsx(
-            "absolute top-20 left-6 z-50 origin-top-left max-h-[calc(100dvh-120px)] w-56 overflow-y-auto overscroll-contain scrollbar-left",
+            "absolute top-20 left-6 z-50 origin-top-left max-h-[calc(100dvh-120px)] w-64 overflow-y-auto overscroll-y-none scrollbar-left",
             isMenuOpen ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-90 -translate-y-4 pointer-events-none"
           )}
           style={{ 
