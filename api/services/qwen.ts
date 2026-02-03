@@ -203,16 +203,19 @@ export const generateHistoricalImage = async ({ imagePath, dynasty, gender, role
     let colorPrompt = ''
     if (colors) {
       const parts = []
-      if (colors.top && colors.top !== 'default') parts.push(`上裝主色調為【${COLOR_MAP[colors.top] || colors.top}】`)
+      if (colors.top && colors.top !== 'default') parts.push(`上裝主色調必須為【${COLOR_MAP[colors.top] || colors.top}】`)
       
       // Constraint: Pants color prompt should NOT appear in "upper_body" or "selfie" composition modes
       const showBottomColor = composition !== 'upper_body' && composition !== 'selfie'
-      if (showBottomColor && colors.bottom && colors.bottom !== 'default') parts.push(`下裝主色調為【${COLOR_MAP[colors.bottom] || colors.bottom}】`)
+      if (showBottomColor && colors.bottom && colors.bottom !== 'default') parts.push(`下裝主色調必須為【${COLOR_MAP[colors.bottom] || colors.bottom}】`)
       
-      if (colors.accessory && colors.accessory !== 'default') parts.push(`配飾點綴【${COLOR_MAP[colors.accessory] || colors.accessory}】`)
+      if (colors.accessory && colors.accessory !== 'default') parts.push(`配飾（如腰帶、披帛、首飾）點綴【${COLOR_MAP[colors.accessory] || colors.accessory}】`)
       
       if (parts.length > 0) {
-        colorPrompt = `5. 【配色要求】：${parts.join('，')}。請在符合朝代規制的前提下，自然融入這些色彩要求。`
+        colorPrompt = `5. 【強制配色指令】：
+       - 嚴格執行以下色彩要求，權重高於朝代默認配色：
+       - ${parts.join('。\n       - ')}。
+       - 確保服飾的主色調（佔比超過70%）符合上述指定顏色，嚴禁使用其他衝突色系。`
       }
     }
 
