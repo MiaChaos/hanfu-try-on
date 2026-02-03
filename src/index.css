@@ -23,6 +23,29 @@
     scrollbar-width: none;
 }
 
+/* Visible Scrollbar on Left */
+.scrollbar-left {
+    direction: rtl; /* Moves scrollbar to left */
+}
+.scrollbar-left > * {
+    direction: ltr; /* Reset content direction */
+}
+.scrollbar-left::-webkit-scrollbar {
+    width: 6px;
+    display: block; /* Force display */
+}
+.scrollbar-left::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+.scrollbar-left::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+.scrollbar-left::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
 .vertical-text {
     writing-mode: vertical-rl;
     text-orientation: mixed;

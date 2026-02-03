@@ -89,161 +89,182 @@ const Home: React.FC = () => {
       {!previewUrl && (
         <div 
           className={clsx(
-            "absolute top-20 left-6 z-50 flex flex-col gap-6 origin-top-left max-h-[calc(100dvh-120px)] w-48 overflow-y-auto scrollbar-none pr-2 pb-24 overscroll-contain touch-pan-y",
+            "absolute top-20 left-6 z-50 origin-top-left max-h-[calc(100dvh-120px)] w-56 overflow-y-auto overscroll-contain touch-pan-y scrollbar-left",
             isMenuOpen ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-90 -translate-y-4 pointer-events-none"
           )}
           style={{ 
-            scrollbarWidth: 'none', 
-            msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch', // Enable momentum scrolling on iOS
-            transition: 'opacity 300ms ease, transform 300ms ease' // Avoid animating layout properties
+            transition: 'opacity 300ms ease, transform 300ms ease'
           }}
         >
-          {/* Gender Select */}
-          <div className="flex flex-col gap-2">
-            <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
-              <User size={12} /> 性別
-            </span>
-            <div className="flex gap-2">
-              {(['female', 'male'] as Gender[]).map((g) => (
-                <button
-                  key={g}
-                  onClick={() => setGender(g)}
-                  className={clsx(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
-                    selectedGender === g 
-                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
-                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
-                  )}
-                >
-                  {g === 'female' ? '女性' : '男性'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Dynasty Select */}
-          <div className="flex flex-col gap-2">
-            <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
-              <Landmark size={12} /> 朝代
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              {DYNASTIES.map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => setDynasty(d.id)}
-                  className={clsx(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl text-center touch-pan-y",
-                    selectedDynasty === d.id 
-                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
-                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
-                  )}
-                >
-                  {d.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Role Select */}
-          <div className="flex flex-col gap-2">
-            <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
-              <Crown size={12} /> 身份
-            </span>
-            <div className="flex gap-2 flex-wrap max-w-[200px]">
-              {ROLES.map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => setRole(r.id)}
-                  className={clsx(
-                    "px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
-                    selectedRole === r.id 
-                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
-                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
-                  )}
-                >
-                  {r.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Composition Select */}
-          <div className="flex flex-col gap-2">
-            <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
-              <ScanFace size={12} /> 構圖
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              {COMPOSITIONS.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setComposition(c.id)}
-                  className={clsx(
-                    "flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
-                    selectedComposition === c.id 
-                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
-                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
-                  )}
-                >
-                  <c.icon size={14} />
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Color Scheme Select (Collapsible) */}
-          <div className="flex flex-col gap-2">
-            <button 
-              onClick={() => setIsColorMenuOpen(!isColorMenuOpen)}
-              className={clsx(
-                "flex items-center gap-2 text-white/50 text-[10px] font-black ml-1 uppercase tracking-[0.25em] w-fit hover:text-white transition-colors touch-pan-y",
-                isColorMenuOpen && "text-white"
-              )}
-            >
-              <Palette size={12} /> 配色
-              <ChevronRight size={12} className={clsx("transition-transform duration-300", isColorMenuOpen && "rotate-90")} />
-            </button>
-            
-            <div className={clsx(
-              "flex flex-col gap-3 transition-all duration-300 overflow-hidden pl-2 border-l border-white/5 ml-1",
-              isColorMenuOpen ? "max-h-[500px] opacity-100 mt-1 pb-1" : "max-h-0 opacity-0"
-            )}>
-              {/* Top Color */}
-              <div className="space-y-1">
-                <span className="text-[10px] text-white/40 ml-1">上裝</span>
-                <div className="flex gap-1.5 flex-wrap max-w-[200px]">
-                  {COLORS.map((c) => (
-                    <button
-                      key={`top-${c.id}`}
-                      onClick={() => setColors({ top: c.id })}
-                      className={clsx(
-                        "w-6 h-6 rounded-full border transition-all relative group touch-pan-y",
-                        c.border,
-                        selectedColors.top === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
-                      )}
-                      style={{ backgroundColor: c.hex }}
-                      title={c.name}
-                    >
-                       {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
-                    </button>
-                  ))}
-                </div>
+          <div className="flex flex-col gap-6 pl-3 pr-1 pb-24">
+            {/* Gender Select */}
+            <div className="flex flex-col gap-2">
+              <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+                <User size={12} /> 性別
+              </span>
+              <div className="flex gap-2">
+                {(['female', 'male'] as Gender[]).map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => setGender(g)}
+                    className={clsx(
+                      "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
+                      selectedGender === g 
+                        ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                        : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
+                    )}
+                  >
+                    {g === 'female' ? '女性' : '男性'}
+                  </button>
+                ))}
               </div>
+            </div>
 
-              {/* Bottom Color - Hide for upper_body/selfie */}
-              {selectedComposition !== 'upper_body' && selectedComposition !== 'selfie' && (
+            {/* Dynasty Select */}
+            <div className="flex flex-col gap-2">
+              <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+                <Landmark size={12} /> 朝代
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                {DYNASTIES.map((d) => (
+                  <button
+                    key={d.id}
+                    onClick={() => setDynasty(d.id)}
+                    className={clsx(
+                      "px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl text-center touch-pan-y",
+                      selectedDynasty === d.id 
+                        ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                        : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
+                    )}
+                  >
+                    {d.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Role Select */}
+            <div className="flex flex-col gap-2">
+              <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+                <Crown size={12} /> 身份
+              </span>
+              <div className="flex gap-2 flex-wrap max-w-[200px]">
+                {ROLES.map((r) => (
+                  <button
+                    key={r.id}
+                    onClick={() => setRole(r.id)}
+                    className={clsx(
+                      "px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
+                      selectedRole === r.id 
+                        ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                        : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
+                    )}
+                  >
+                    {r.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Composition Select */}
+            <div className="flex flex-col gap-2">
+              <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+                <ScanFace size={12} /> 構圖
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                {COMPOSITIONS.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => setComposition(c.id)}
+                    className={clsx(
+                      "flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl touch-pan-y",
+                      selectedComposition === c.id 
+                        ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                        : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
+                    )}
+                  >
+                    <c.icon size={14} />
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Color Scheme Select (Collapsible) */}
+            <div className="flex flex-col gap-2">
+              <button 
+                onClick={() => setIsColorMenuOpen(!isColorMenuOpen)}
+                className={clsx(
+                  "flex items-center gap-2 text-white/50 text-[10px] font-black ml-1 uppercase tracking-[0.25em] w-fit hover:text-white transition-colors touch-pan-y",
+                  isColorMenuOpen && "text-white"
+                )}
+              >
+                <Palette size={12} /> 配色
+                <ChevronRight size={12} className={clsx("transition-transform duration-300", isColorMenuOpen && "rotate-90")} />
+              </button>
+              
+              <div className={clsx(
+                "flex flex-col gap-3 transition-all duration-300 overflow-hidden pl-2 border-l border-white/5 ml-1",
+                isColorMenuOpen ? "max-h-[500px] opacity-100 mt-1 pb-1" : "max-h-0 opacity-0"
+              )}>
+                {/* Top Color */}
                 <div className="space-y-1">
-                  <span className="text-[10px] text-white/40 ml-1">下裝</span>
+                  <span className="text-[10px] text-white/40 ml-1">上裝</span>
                   <div className="flex gap-1.5 flex-wrap max-w-[200px]">
                     {COLORS.map((c) => (
                       <button
-                        key={`bottom-${c.id}`}
-                        onClick={() => setColors({ bottom: c.id })}
+                        key={`top-${c.id}`}
+                        onClick={() => setColors({ top: c.id })}
                         className={clsx(
                           "w-6 h-6 rounded-full border transition-all relative group touch-pan-y",
                           c.border,
-                          selectedColors.bottom === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                          selectedColors.top === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                        )}
+                        style={{ backgroundColor: c.hex }}
+                        title={c.name}
+                      >
+                         {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom Color - Hide for upper_body/selfie */}
+                {selectedComposition !== 'upper_body' && selectedComposition !== 'selfie' && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-white/40 ml-1">下裝</span>
+                    <div className="flex gap-1.5 flex-wrap max-w-[200px]">
+                      {COLORS.map((c) => (
+                        <button
+                          key={`bottom-${c.id}`}
+                          onClick={() => setColors({ bottom: c.id })}
+                          className={clsx(
+                            "w-6 h-6 rounded-full border transition-all relative group touch-pan-y",
+                            c.border,
+                            selectedColors.bottom === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
+                          )}
+                          style={{ backgroundColor: c.hex }}
+                          title={c.name}
+                        >
+                          {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Accessory Color */}
+                <div className="space-y-1">
+                  <span className="text-[10px] text-white/40 ml-1">配飾</span>
+                  <div className="flex gap-1.5 flex-wrap max-w-[200px]">
+                    {COLORS.map((c) => (
+                      <button
+                        key={`acc-${c.id}`}
+                        onClick={() => setColors({ accessory: c.id })}
+                        className={clsx(
+                          "w-6 h-6 rounded-full border transition-all relative group touch-pan-y",
+                          c.border,
+                          selectedColors.accessory === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
                         )}
                         style={{ backgroundColor: c.hex }}
                         title={c.name}
@@ -253,49 +274,27 @@ const Home: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              )}
-
-              {/* Accessory Color */}
-              <div className="space-y-1">
-                <span className="text-[10px] text-white/40 ml-1">配飾</span>
-                <div className="flex gap-1.5 flex-wrap max-w-[200px]">
-                  {COLORS.map((c) => (
-                    <button
-                      key={`acc-${c.id}`}
-                      onClick={() => setColors({ accessory: c.id })}
-                      className={clsx(
-                        "w-6 h-6 rounded-full border transition-all relative group touch-pan-y",
-                        c.border,
-                        selectedColors.accessory === c.id ? "scale-125 ring-2 ring-white/50" : "hover:scale-110 opacity-70 hover:opacity-100"
-                      )}
-                      style={{ backgroundColor: c.hex }}
-                      title={c.name}
-                    >
-                      {c.id === 'default' && <div className="absolute inset-0 m-auto w-3 h-0.5 bg-white/30 rotate-45" />}
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
-          </div>
 
-          {/* Background Toggle */}
-          <div className="flex flex-col gap-2">
-            <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
-              <ImageIcon size={12} /> 背景
-            </span>
-            <button
-              onClick={() => setKeepBackground(!keepBackground)}
-              className={clsx(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl w-fit touch-pan-y",
-                !keepBackground 
-                  ? "bg-primary/20 text-primary border-primary/40" 
-                  : "bg-yellow-500/20 text-yellow-500 border-yellow-500/40"
-              )}
-            >
-              {!keepBackground ? <ImageIcon size={14} /> : <ImageOff size={14} />}
-              {!keepBackground ? '更換背景' : '保留背景'}
-            </button>
+            {/* Background Toggle */}
+            <div className="flex flex-col gap-2">
+              <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
+                <ImageIcon size={12} /> 背景
+              </span>
+              <button
+                onClick={() => setKeepBackground(!keepBackground)}
+                className={clsx(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl w-fit touch-pan-y",
+                  !keepBackground 
+                    ? "bg-primary/20 text-primary border-primary/40" 
+                    : "bg-yellow-500/20 text-yellow-500 border-yellow-500/40"
+                )}
+              >
+                {!keepBackground ? <ImageIcon size={14} /> : <ImageOff size={14} />}
+                {!keepBackground ? '更換背景' : '保留背景'}
+              </button>
+            </div>
           </div>
         </div>
       )}
