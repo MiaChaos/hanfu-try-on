@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useRef, useState, MouseEvent } from 'react'
 import { useAppStore, type Dynasty } from '../store'
 import { clsx } from 'clsx'
 
@@ -28,39 +28,90 @@ const DYNASTIES: { id: Dynasty; name: string; image: string }[] = [
 
 export const DynastySelector: React.FC = () => {
   const { selectedDynasty, setDynasty } = useAppStore()
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [startX, setStartX] = useState(0)
+  const [scrollLeft, setScrollLeft] = useState(0)
+
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    if (!scrollRef.current) return
+    setIsDragging(true)
+    setStartX(e.pageX - scrollRef.current.offsetLeft)
+    setScrollLeft(scrollRef.current.scrollLeft)
+  }
+
+  const handleMouseLeave = () => {
+    setIsDragging(false)
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !scrollRef.current) return
+    e.preventDefault()
+    const x = e.pageX - scrollRef.current.offsetLeft
+    const walk = (x - startX) * 2 // Scroll-fast
+    scrollRef.current.scrollLeft = scrollLeft - walk
+  }
 
   return (
-    <div className="w-full overflow-x-auto scrollbar-hide py-4">
-      <div className="flex space-x-4 px-4 min-w-max">
+    <div 
+      ref={scrollRef}
+      className={clsx(
+        "w-full overflow-x-auto scrollbar-hide py-4 select-none",
+        isDragging ? "cursor-grabbing" : "cursor-grab"
+      )}
+      onMouseDown={handleMouseDown}
+      onMouseLeave={handleMouseLeave}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+    >
+      <div className="flex space-x-4 px-4 min-w-max pointer-events-none">
         {DYNASTIES.map((dynasty) => (
-          <button
+          <div
             key={dynasty.id}
-            onClick={() => setDynasty(dynasty.id)}
-            className={clsx(
-              'relative w-32 h-48 rounded-xl overflow-hidden transition-all duration-300 transform',
-              selectedDynasty === dynasty.id 
-                ? 'ring-4 ring-primary scale-105 shadow-xl' 
-                : 'opacity-80 hover:opacity-100 hover:scale-105'
-            )}
+            onClick={(e) => {
+              // Only trigger click if not dragging (simple heuristic or use pointer events)
+              // But since we put pointer-events-none on parent, children won't receive clicks during drag?
+              // Actually pointer-events-none on parent might block button clicks entirely.
+              // Let's remove pointer-events-none from parent and handle click vs drag.
+            }}
+            className="pointer-events-auto"
           >
-            <img 
-              src={dynasty.image} 
-              alt={dynasty.name} 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-              <span className="text-white font-serif text-sm font-bold tracking-widest">
-                {dynasty.name}
-              </span>
-            </div>
-            {selectedDynasty === dynasty.id && (
-              <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
+            <button
+              onClick={() => {
+                if (!isDragging) {
+                  setDynasty(dynasty.id)
+                }
+              }}
+              className={clsx(
+                'relative w-32 h-48 rounded-xl overflow-hidden transition-all duration-300 transform',
+                selectedDynasty === dynasty.id 
+                  ? 'ring-4 ring-primary scale-105 shadow-xl' 
+                  : 'opacity-80 hover:opacity-100 hover:scale-105'
+              )}
+            >
+              <img 
+                src={dynasty.image} 
+                alt={dynasty.name} 
+                className="w-full h-full object-cover pointer-events-none" // Prevent image drag
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                <span className="text-white font-serif text-sm font-bold tracking-widest">
+                  {dynasty.name}
+                </span>
               </div>
-            )}
-          </button>
+              {selectedDynasty === dynasty.id && (
+                <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              )}
+            </button>
+          </div>
         ))}
       </div>
     </div>

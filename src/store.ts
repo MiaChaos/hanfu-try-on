@@ -63,7 +63,7 @@ export const useAppStore = create<AppState>()(
       selectedRole: 'commoner',
       selectedComposition: 'upper_body',
       selectedColors: { top: 'default', bottom: 'default', accessory: 'default' },
-      keepBackground: false,
+      keepBackground: true,
       result: null,
       history: [],
       isProcessing: false,
