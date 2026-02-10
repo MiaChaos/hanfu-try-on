@@ -96,7 +96,7 @@ const Home: React.FC = () => {
             transition: 'opacity 300ms ease, transform 300ms ease'
           }}
         >
-          <div className="flex flex-col gap-6 pl-3 pr-1 pb-24 touch-none">
+          <div className="flex flex-col gap-6 pl-3 pr-1 pb-24">
             {/* Gender Select */}
             <div className="flex flex-col gap-2">
               <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
