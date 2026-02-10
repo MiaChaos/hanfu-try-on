@@ -282,18 +282,32 @@ const Home: React.FC = () => {
               <span className="text-white/50 text-[10px] font-black ml-1 flex items-center gap-2 uppercase tracking-[0.25em]">
                 <ImageIcon size={12} /> 背景
               </span>
-              <button
-                onClick={() => setKeepBackground(!keepBackground)}
-                className={clsx(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl w-fit",
-                  !keepBackground 
-                    ? "bg-primary/20 text-primary border-primary/40" 
-                    : "bg-yellow-500/20 text-yellow-500 border-yellow-500/40"
-                )}
-              >
-                {!keepBackground ? <ImageIcon size={14} /> : <ImageOff size={14} />}
-                {!keepBackground ? '更換背景' : '保留背景'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setKeepBackground(false)}
+                  className={clsx(
+                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl",
+                    !keepBackground 
+                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
+                  )}
+                >
+                  <ImageIcon size={14} />
+                  更換背景
+                </button>
+                <button
+                  onClick={() => setKeepBackground(true)}
+                  className={clsx(
+                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all border backdrop-blur-xl",
+                    keepBackground 
+                      ? "bg-primary/90 text-white border-primary shadow-lg scale-105" 
+                      : "bg-black/40 text-white/60 border-white/10 hover:bg-white/10"
+                  )}
+                >
+                  <ImageOff size={14} />
+                  保留背景
+                </button>
+              </div>
             </div>
           </div>
         </div>
