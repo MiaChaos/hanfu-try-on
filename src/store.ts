@@ -93,7 +93,7 @@ export const useAppStore = create<AppState>()(
         result: null,
         isProcessing: false,
         error: null,
-        keepBackground: false
+        keepBackground: true
       })
     }),
     {
